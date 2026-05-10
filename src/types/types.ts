@@ -1,17 +1,17 @@
 import type { DTOInfo } from "./DTOInfo";
 
 export interface Artist extends DTOInfo  {
-  id: String;
-  name: String;
-  images: String[];
-  spotify: String;
-  soundcloud: String;
+  id: string;
+  name: string;
+  images: string[];
+  spotify: string;
+  soundcloud: string;
 }
 
 export interface ScannedPhoto {
-  id: String;
-  projectName: String;
-  src: String | null;
+  id: string;
+  projectName: string;
+  src: string;
   timestamp: number;
 }
 

@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { ARTISTS } from '@/data/artists';
 
 const props = defineProps<{
-  onCollectionButton: (id: String) => void;
+  onCollectionButton: (id: string) => void;
 }>();
 
 const emit = defineEmits(['selectArtist']);

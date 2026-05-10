@@ -27,7 +27,7 @@ import type { DTOInfo } from '@/types/DTOInfo';
 
 // --- State
 const currentPage: Ref<Page> = ref('home');
-const currentArtistId: Ref<String | null> = ref(null);
+const currentArtistId: Ref<string | null> = ref(null);
 const scannedPhotos: Ref<ScannedPhoto[]> = ref([]);
 const currentInfo: Ref<DTOInfo> = ref(ACCUEIL);
 
@@ -44,7 +44,7 @@ const goHome = () => {
   setCurrentInfo();
 };
 
-const goToCollection = (artistId: String) => {
+const goToCollection = (artistId: string) => {
   currentArtistId.value = artistId;
   currentPage.value = 'collection';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -64,7 +64,9 @@ console.log(currentPage.value)
   if(currentPage.value == 'home'){
     currentInfo.value = ACCUEIL;
   } else if(currentPage.value == 'collection'){
-    currentInfo.value = ARTISTS.find((artiste) => artiste.id == currentArtistId.value)
+    var artist = ARTISTS.find((artiste) => artiste.id == currentArtistId.value);
+    if(artist != undefined) currentInfo.value = artist;
+
   }
 
 }

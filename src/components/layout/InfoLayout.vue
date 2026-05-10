@@ -4,9 +4,9 @@ import type { DTOInfo } from '@/types/DTOInfo';
 import getAssetSrc from '@/utils/imageUtils';
 
 const props = defineProps<{
-  text1: String,
-  text2?: String,
-  imageUrl: String
+  text1: string,
+  text2?: string,
+  imageUrl: string
 }>();
 
 

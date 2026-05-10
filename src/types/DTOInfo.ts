@@ -1,7 +1,7 @@
 export interface DTOInfo {
-  shortBio1: String;
-  shortBio2: String;
-  description: String;
-  image1: String;
-  image2: String;
+  shortBio1: string;
+  shortBio2: string;
+  description: string;
+  image1: string;
+  image2: string;
 }
