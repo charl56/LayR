@@ -18,9 +18,9 @@ RUN npm install
 # Copy everything else for build
 COPY src/ ./src
 COPY vite.config.ts ./
-COPY ts.config.json ./
-COPY ts.config.app.json ./
-COPY ts.config.node.json ./
+COPY tsconfig.json ./
+COPY tsconfig.app.json ./
+COPY tsconfig.node.json ./
 COPY env.d.ts ./
 COPY index.html ./
 
