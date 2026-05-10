@@ -1,0 +1,7 @@
+services:
+  charles:
+    container_name: layr
+    image: ghcr.io/charl56/layr:latest
+    restart: always
+    ports:
+      - "127.0.0.1:8092:80"
