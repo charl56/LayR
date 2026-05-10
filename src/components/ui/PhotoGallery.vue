@@ -1,29 +1,22 @@
 <script setup lang="ts">
-import type { ScannedPhoto } from '@/types/types';
+import type { Artist, ScannedPhoto } from '@/types/types';
+import getAssetSrc from '@/utils/imageUtils';
 
 const props = defineProps<{
-  photos: ScannedPhoto[];
+  currentData: Artist;
 }>();
 </script>
 
 <template>
-  <div class="photo-gallery">
-    <h2>Photos scannées</h2>
-    <div class="gallery-grid">
+  <div id="galery" class="photo-galery">
+    <h2>Galerie</h2>
+    <div class="galery-grid">
       <div
-        v-for="photo in photos"
-        :key="photo.id"
-        class="photo-card"
-      >
-        <img
-          :src="photo.src"
-          :alt="`Photo: ${photo.projectName}`"
-          class="photo-image"
-        />
+        v-for="src in currentData.images" :key="src" class="photo-card">
+        <img :src="getAssetSrc(src)" :alt="`Photo: ${src}`" class="photo-image" />
         <div class="photo-info">
-          <p class="photo-project">{{ photo.projectName }}</p>
+          <!-- <p class="photo-project">{{ photo.projectName }}</p> -->
           <p class="photo-date">
-            {{ new Date(photo.timestamp).toLocaleDateString() }}
           </p>
         </div>
       </div>
@@ -32,14 +25,18 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-.photo-gallery {
-  background: #f9f9f9;
+.photo-galery {
+  height: 100lvh;
+  width: 100%;
+  text-align: center;
+  position: relative; /* Pour positionner les textes par rapport à ce conteneur */
+  overflow: hidden; /* Empêche le défilement horizontal */
+  background: #000000;
   padding: 1rem;
-  margin-top: 2rem;
-  border-top: 1px solid #eee;
+  color: #fff;
 }
 
-.gallery-grid {
+.galery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { DTOInfo } from '@/types/DTOInfo';
 import getAssetSrc from '@/utils/imageUtils';
 
 const props = defineProps<{
@@ -30,7 +28,7 @@ const props = defineProps<{
 
 <style scoped>
 .info-layout {
-    height: 100dvh;
+    height: 100lvh;
     width: 100%;
     padding: 0;
     position: relative; /* Pour positionner les textes par rapport à ce conteneur */
@@ -48,7 +46,7 @@ const props = defineProps<{
     height: 100%;
     position: relative;
     display: flex;
-    top: -100dvh;
+    top: -100lvh;
     align-items: center;
     justify-content: center;
     text-align: center;

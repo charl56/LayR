@@ -7,7 +7,7 @@ export const ACCUEIL: Artist = {
     shortBio2: 'Chaque affiche que vous découvrez peut être scannée, vécue et conservée dans votre collection',
     image1: 'accueil1.jpg',
     image2: 'accueil2.png',
-    images: ['https://cdn.pixabay.com/photo/2026/01/12/20/14/chamomile-10065194_960_720.jpg', 'https://cdn.pixabay.com/photo/2026/01/12/20/14/chamomile-10065194_960_720.jpg'],
+    images: ['', ''],
     description: 'Nous vous écoutons, observons avec attention, et transformons l’authenticité en expériences visuelles qui marquent la rue',
     spotify: '',
     soundcloud: ''
@@ -23,7 +23,7 @@ export const ARTISTS: Artist[] = [
         shortBio2: 'Son style mêle culture internet, expériences électroniques et influences hyperpop actuelles. Entièrement auto-produit, il mélange esthétique pop 2010.',
         image1: 'restinstar.png',
         image2: 'stronboscoo.png',
-        images: ['https://via.placeholder.com/300?text=Kelaggs1', 'https://via.placeholder.com/300?text=Kelaggs2'],
+        images: ['galerie.png', 'galerie.png'],
         description: 'Kelaggs redonne à la rue son pouvoir d\'expression, en transformant chaque affiche en expérience à vivre et à garder.',
         spotify: 'https://spotify.com/kelaggs',
         soundcloud: 'https://soundcloud.com/kelaggs'
@@ -35,7 +35,7 @@ export const ARTISTS: Artist[] = [
         shortBio2: 'Ses créations explorent les frontières entre street art traditionnel et art numérique contemporain.',
         image1: 'stronboscoo.png',
         image2: 'restinstar.png',
-        images: ['https://via.placeholder.com/300?text=Kelaggs1', 'https://via.placeholder.com/300?text=Kelaggs2'],
+        images: ['galerie.png', 'galerie.png'],
         description: 'Dimes transforme les murs en galeries éphémères, donnant vie aux rues avec chaque coup de pinceau et chaque pixel.',
         spotify: '',
         soundcloud: ''
