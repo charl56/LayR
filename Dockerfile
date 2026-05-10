@@ -17,7 +17,11 @@ RUN npm install
 
 # Copy everything else for build
 COPY src/ ./src
-COPY vite.config.js ./
+COPY vite.config.ts ./
+COPY ts.config.json ./
+COPY ts.config.app.json ./
+COPY ts.config.node.json ./
+COPY env.d.ts ./
 COPY index.html ./
 
 # build app for production with minification
