@@ -1,9 +1,14 @@
 ### Étape 1 : Configurer les variables secretes
 Liste des variables à initialiser, dans le dépôt GitHub sous Settings > Secrets and variables > Actions > New repository secret : 
-- PAT : Private Access Token, généré sur Github
+- PAT : Private Access Token, généré sur Github (avec le droit `Write packages`)
 - SSH_HOST : Adresse IP du serveur
 - SSH_PORT : Port utilisé pour se connecter en SSH au serveur
-- SSH_PRIVATE_KEY : Clé public? de connection SSH
+- SSH_PRIVATE_KEY : Clé privé de connection SSH
+
+*Sur ton serveur, génère une clé avec un nom définit*
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+Ajouter la clé au fichier `/home/{SSH_USER}/.ssh/autorizedkey`, ou un truc comme ça
+
 - SSH_USER : Utilisateur qui se connecte en SSH
 - WORK_DIR : Chemion du dossier, où se trouve le docker-compose.yml du projet /srv/nomprojet
 

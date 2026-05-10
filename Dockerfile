@@ -33,5 +33,5 @@ COPY images/ /app/dist/images
 FROM nginx:stable-alpine AS production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-EXPOSE 90
+EXPOSE 92
 CMD ["nginx", "-g", "daemon off;"]
