@@ -8,24 +8,24 @@ import { ref } from 'vue';
     <div id="contact" class="contact">
         <!-- En-tête cliquable pour déployer/fermer la liste -->
         <div class="contact-header">
-            <h2>Contact</h2>
+            <h2>CONTACT</h2>
         </div>
         <div class="contact-icons">
-            <a class="btn-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
+            <a class="icon-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
                 rel="noopener noreferrer">
-                <img alt="Logo" class="logo" src="@/assets/facebook.svg" width="80" height="70" />
+                <img alt="Logo" class="logo" src="@/assets/facebook.svg"/>
             </a>
-            <a class="btn-contact" aria-label="Toggle menu" href="https://www.x.com/" target="_blank"
+            <a class="icon-contact" aria-label="Toggle menu" href="https://www.x.com/" target="_blank"
                 rel="noopener noreferrer">
-                <img alt="Logo" class="logo" src="@/assets/x.svg" width="80" height="70" />
+                <img alt="Logo" class="logo" src="@/assets/x.svg"/>
             </a>
-            <a class="btn-contact" aria-label="Toggle menu" href="https://www.instagram.com/" target="_blank"
+            <a class="icon-contact" aria-label="Toggle menu" href="https://www.instagram.com/" target="_blank"
                 rel="noopener noreferrer">
-                <img alt="Logo" class="logo" src="@/assets/instagram.svg" width="80" height="70" />
+                <img alt="Logo" class="logo" src="@/assets/instagram.svg"/>
             </a>
-            <a class="btn-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
+            <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
                 rel="noopener noreferrer">
-                <img alt="Logo" class="logo" src="@/assets/youtube.svg" width="80" height="70" />
+                <img alt="Logo" class="logo" src="@/assets/youtube.svg"/>
             </a>
         </div>
 
@@ -56,15 +56,27 @@ import { ref } from 'vue';
 
 .contact-header h2 {
     margin: 0;
-    font-size: 1.2rem;
 }
 
 .contact-icons {
     display: flex;
     justify-content: center;
+    height: 56px;
+    margin-bottom: 2rem;
 }
 
-.btn-contact{
+.icon-contact{
+    height: 100%;
+    width: 70px;
 
 }
+
+.icon-contact img {
+    height: 56px;
+    width: 56px;
+}
+
+
+
+
 </style>

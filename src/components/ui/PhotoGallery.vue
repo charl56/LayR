@@ -63,12 +63,10 @@ const props = defineProps<{
 .photo-project {
   margin: 0;
   font-weight: bold;
-  font-size: 0.9rem;
 }
 
 .photo-date {
   margin: 0.25rem 0 0;
-  font-size: 0.8rem;
   color: #666;
 }
 </style>

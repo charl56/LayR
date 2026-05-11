@@ -94,7 +94,6 @@ onUnmounted(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
   transition: background 0.2s;
 }
 

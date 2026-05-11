@@ -36,11 +36,12 @@ onUnmounted(() => {
 <template>
   <header class="app-header" :class="{ 'app-header--open': menuOpen }">
     <div class="header-content">
-      <img alt="Logo" class="logo" src="@/assets/logo.svg" width="90" height="90" />
-      <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
+      <button class="menu-toggle" @click.stop="onHomeEvent()" aria-label="Toggle menu">
+        <img alt="Logo" class="logo" src="@/assets/logo.svg" width="90" height="90" />
+      </button>
+      <button class="menu-toggle" @click.stop="menuOpen = !menuOpen" aria-label="Toggle menu">
         <img alt="Logo" class="logo" src="@/assets/burger.svg" width="80" height="70" />
       </button>
-
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
           <li class="nav-item">
@@ -98,7 +99,6 @@ onUnmounted(() => {
 .menu-toggle {
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   color: #fff;
 }
