@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import type { Page } from '@/types/types';
 
 const props = defineProps<{
@@ -8,56 +8,57 @@ const props = defineProps<{
 }>();
 
 const menuOpen = ref(false);
+const headerNavRef = ref<HTMLElement | null>(null);
 
 const onHomeEvent = () => {
   menuOpen.value = false;
   props.onHomeButton()
 };
+
+// Fonction pour fermer le menu si on clique en dehors
+const handleClickOutside = (event: MouseEvent) => {
+  if (headerNavRef.value && !headerNavRef.value.contains(event.target as Node)) {
+    menuOpen.value = false;
+  }
+};
+
+// Ajouter l'écouteur d'événement au montage du composant
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside);
+});
+
+// Nettoyer l'écouteur d'événement au démontage du composant
+onUnmounted(() => {
+  window.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
-  <header class="app-header">
+  <header class="app-header" :class="{ 'app-header--open': menuOpen }">
     <div class="header-content">
-      <img
-        alt="Logo"
-        class="logo"
-        src="@/assets/logo.svg"
-        width="90"
-        height="90"
-      />
-      <button
-        class="menu-toggle"
-        @click="menuOpen = !menuOpen"
-        aria-label="Toggle menu"
-      >
-        <img
-        alt="Logo"
-        class="logo"
-        src="@/assets/burger.svg"
-        width="80"
-        height="70"
-      />
+      <img alt="Logo" class="logo" src="@/assets/logo.svg" width="90" height="90" />
+      <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
+        <img alt="Logo" class="logo" src="@/assets/burger.svg" width="80" height="70" />
       </button>
 
-      <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" >
+      <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="#" @click="onHomeEvent()">Accueil</a>
+            <a href="#" @click.stop="onHomeEvent()">Accueil</a>
           </li>
           <li class="nav-item">
-            <a href="#collection" @click="menuOpen = false">Collections</a>
+            <a href="#collection" @click.stop="menuOpen = false">Collections</a>
           </li>
 
           <li v-if="currentPage == 'home'" class="nav-item">
-            <a href="#about" @click="menuOpen = false">Qui sommes-nous</a>
+            <a href="#about" @click.stop="menuOpen = false">Qui sommes-nous</a>
           </li>
           <li v-else class="nav-item">
-            <a href="#galery" @click="menuOpen = false">Gallerie</a>
+            <a href="#galery" @click.stop="menuOpen = false">Gallerie</a>
           </li>
-          
-          
+
           <li class="nav-item">
-            <a href="#contact" @click="menuOpen = false">Contact</a>
+            <a href="#contact" @click.stop="menuOpen = false">Contact</a>
           </li>
         </ul>
       </nav>
@@ -68,11 +69,18 @@ const onHomeEvent = () => {
 <style scoped>
 .app-header {
   width: 100%;
-  background: #ffffff00;
   padding: 0.5rem 1rem;
   position: fixed;
   top: 0;
   z-index: 100;
+  transition: 0.5s;
+  /* Don't distrub clicks, for example */
+  /* pointer-events: none; */
+}
+
+.app-header--open {
+  backdrop-filter: blur(8px);
+  transition: 0.5s;
 }
 
 .header-content {
@@ -136,6 +144,4 @@ const onHomeEvent = () => {
 .nav-item a:hover {
   background: rgba(0, 0, 0, 0.05);
 }
-
-
 </style>

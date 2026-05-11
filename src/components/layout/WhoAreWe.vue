@@ -39,7 +39,6 @@ const toggleList = () => {
 <style scoped>
 .about {
   width: 100%; /* Prend toute la largeur */
-  font-family: Arial, sans-serif;
   border-radius: 4px;
   overflow: hidden; /* Évite les débordements */
 }

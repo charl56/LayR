@@ -11,16 +11,20 @@ import { ref } from 'vue';
             <h2>Contact</h2>
         </div>
         <div class="contact-icons">
-            <a class="menu-toggle" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+            <a class="btn-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
+                rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/facebook.svg" width="80" height="70" />
             </a>
-            <a class="menu-toggle" aria-label="Toggle menu" href="https://www.x.com/" target="_blank" rel="noopener noreferrer">
+            <a class="btn-contact" aria-label="Toggle menu" href="https://www.x.com/" target="_blank"
+                rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/x.svg" width="80" height="70" />
             </a>
-            <a class="menu-toggle" aria-label="Toggle menu" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+            <a class="btn-contact" aria-label="Toggle menu" href="https://www.instagram.com/" target="_blank"
+                rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/instagram.svg" width="80" height="70" />
             </a>
-            <a class="menu-toggle" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+            <a class="btn-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
+                rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/youtube.svg" width="80" height="70" />
             </a>
         </div>
@@ -31,11 +35,8 @@ import { ref } from 'vue';
 <style scoped>
 .contact {
     width: 100%;
-    /* Prend toute la largeur */
-    font-family: Arial, sans-serif;
     border-radius: 4px;
     overflow: hidden;
-    /* Évite les débordements */
 }
 
 .contact-header {
@@ -58,10 +59,12 @@ import { ref } from 'vue';
     font-size: 1.2rem;
 }
 
-.contact-icons{
-        display: flex;
-    /* align-content: center; */
-    /* flex-wrap: nowrap; */
+.contact-icons {
+    display: flex;
     justify-content: center;
+}
+
+.btn-contact{
+
 }
 </style>

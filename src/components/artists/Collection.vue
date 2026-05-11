@@ -49,7 +49,6 @@ const handleArtistClick = (artist: Artist) => {
 <style scoped>
 .artist-list {
   width: 100%; /* Prend toute la largeur */
-  font-family: Arial, sans-serif;
   border-radius: 4px;
   overflow: hidden; /* Évite les débordements */
 }
