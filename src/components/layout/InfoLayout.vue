@@ -15,11 +15,11 @@ const props = defineProps<{
     <div class="info-layout" >
         <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
-        <div :class="text2 == undefined ? 'only-one-text' : 'first-text'">
+        <div :class="text2 == undefined ? 'only-one-text' : 'two-text first'">
             <p>{{ text1 }}</p>
         </div>
 
-        <div v-if="text2 != undefined" class="second-text">
+        <div v-if="text2 != undefined" class="two-text second">
             <p>{{ text2 }}</p>
         </div>
 
@@ -53,20 +53,21 @@ const props = defineProps<{
     color: #fff;
 }
 
-.first-text{
+.two-text{
     width: 80%;
-    position: absolute;
-    top: 120px;
-    left: 0.5rem;
+position: absolute;
     color: #fff;
+
 }
 
-.second-text{
-    width: 80%;
-    position: absolute;
+.first{
+    top: 120px;
+    left: 1rem;
+}
+
+.second{
     bottom: 120px;
-    right: 0.5rem;
-    color: #fff;
+    right: 1rem;
     text-align: end;
 }
 </style>

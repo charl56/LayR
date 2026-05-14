@@ -20,27 +20,26 @@ const toggleList = () => {
 
     <!-- Liste des artistes (affichée si isOpen = true) -->
     <div v-if="isOpen" class="about-content">
-        <h2 class="about-text">
+        <p class="about-text">
             Fondée à Bordeaux en 2026, LayR est née d'un constat simple : les affiches urbaines sont devenues banales, souvent ignorées.
-        </h2>
-        <h2 class="about-text">
+        </p>
+        <p class="about-text">
             Portée par une passion pour la musique et les cultures visuelles, LayR transforme ces supports en expériences vivantes grâce à la réalité augmentée.
-        </h2>
-        <h2 class="about-text">
+        </p>
+        <p class="about-text">
             Les affiches prennent vie, se découvrent, et peuvent être conservées dans une collection personnelle.
-        </h2>
-        <h2 class="about-text">
+        </p>
+        <p class="about-text">
             LayR redonne à la rue son pouvoir d'expression, en transformant chaque affiche en expérience à vivre et à garder.
-        </h2>
+        </p>
     </div>
   </div>
 </template>
 
 <style scoped>
 .about {
-  width: 100%; /* Prend toute la largeur */
-  border-radius: 4px;
-  overflow: hidden; /* Évite les débordements */
+  width: 100%;
+  overflow: hidden;
 }
 
 .about-header {
@@ -57,6 +56,7 @@ const toggleList = () => {
 
 .about-header h2 {
   margin: 0;
+  color: black;
 }
 
 .about-content {

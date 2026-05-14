@@ -37,10 +37,10 @@ onUnmounted(() => {
   <header class="app-header" :class="{ 'app-header--open': menuOpen }">
     <div class="header-content">
       <button class="menu-toggle" @click.stop="onHomeEvent()" aria-label="Toggle menu">
-        <img alt="Logo" class="logo" src="@/assets/logo.svg" width="90" height="90" />
+        <img alt="Logo" class="logo" src="@/assets/logo.svg" width="70" height="70" />
       </button>
       <button class="menu-toggle" @click.stop="menuOpen = !menuOpen" aria-label="Toggle menu">
-        <img alt="Logo" class="logo" src="@/assets/burger.svg" width="80" height="70" />
+        <img alt="Logo" class="logo" src="@/assets/burger.svg" width="60" height="60" />
       </button>
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">

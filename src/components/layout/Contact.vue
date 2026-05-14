@@ -35,7 +35,6 @@ import { ref } from 'vue';
 <style scoped>
 .contact {
     width: 100%;
-    border-radius: 4px;
     overflow: hidden;
 }
 

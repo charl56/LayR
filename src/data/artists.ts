@@ -40,6 +40,18 @@ export const ARTISTS: Artist[] = [
         spotify: '',
         soundcloud: ''
     },
+    {
+        id: 'luvresval',
+        name: 'Luv Resval',
+        shortBio1: 'Dimes crée des expériences visuelles captivantes qui marient art urbain et technologie moderne.',
+        shortBio2: 'Ses créations explorent les frontières entre street art traditionnel et art numérique contemporain.',
+        image1: 'stronboscoo.png',
+        image2: 'restinstar.png',
+        images: ['galerie.png', 'galerie.png'],
+        description: 'Dimes transforme les murs en galeries éphémères, donnant vie aux rues avec chaque coup de pinceau et chaque pixel.',
+        spotify: '',
+        soundcloud: ''
+    },
     // {
     //     id: 'pvrsat',
     //     name: 'Pvrsat',
