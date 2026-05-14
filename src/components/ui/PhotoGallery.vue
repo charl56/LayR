@@ -26,7 +26,7 @@ const props = defineProps<{
 
 <style scoped>
 .photo-galery {
-  height: 100lvh;
+  height: 100svh;
   width: 100%;
   text-align: center;
   position: relative; /* Pour positionner les textes par rapport à ce conteneur */

@@ -28,7 +28,7 @@ const props = defineProps<{
 
 <style scoped>
 .info-layout {
-    height: 100lvh;
+    height: 100svh;
     width: 100%;
     padding: 0;
     position: relative; /* Pour positionner les textes par rapport à ce conteneur */
@@ -46,7 +46,7 @@ const props = defineProps<{
     height: 100%;
     position: relative;
     display: flex;
-    top: -100lvh;
+    top: -100svh;
     align-items: center;
     justify-content: center;
     text-align: center;

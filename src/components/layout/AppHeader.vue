@@ -122,7 +122,7 @@ onUnmounted(() => {
 }
 
 .nav-list {
-  height: 120lvh;
+  height: 120svh;
   list-style: none;
   padding: 1rem;
   padding-top: 1.2rem;
