@@ -45,21 +45,21 @@ onUnmounted(() => {
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="#" @click.stop="onHomeEvent()">Accueil</a>
+            <a href="#" @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
           </li>
           <li class="nav-item">
-            <a href="#collection" @click.stop="menuOpen = false">Collections</a>
+            <a href="#collection" @click.stop="menuOpen = false"><h2>COLLECTIONS</h2></a>
           </li>
 
           <li v-if="currentPage == 'home'" class="nav-item">
-            <a href="#about" @click.stop="menuOpen = false">Qui sommes-nous</a>
+            <a href="#about" @click.stop="menuOpen = false"><h2>QUI SOMMES-NOUS</h2></a>
           </li>
           <li v-else class="nav-item">
-            <a href="#galery" @click.stop="menuOpen = false">Gallerie</a>
+            <a href="#galery" @click.stop="menuOpen = false"><h2>GALLERIE</h2></a>
           </li>
 
           <li class="nav-item">
-            <a href="#contact" @click.stop="menuOpen = false">Contact</a>
+            <a href="#contact" @click.stop="menuOpen = false"><h2>CONTACT</h2></a>
           </li>
         </ul>
       </nav>
@@ -69,19 +69,18 @@ onUnmounted(() => {
 
 <style scoped>
 .app-header {
+  height: 5rem;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0rem 1rem;
+  padding-top: 0.5rem ;
   position: fixed;
   top: 0;
   z-index: 100;
-  transition: 0.5s;
-  /* Don't distrub clicks, for example */
-  /* pointer-events: none; */
+  transition: 0.3s;
 }
 
 .app-header--open {
-  backdrop-filter: blur(8px);
-  transition: 0.5s;
+  background-color: black;
 }
 
 .header-content {
@@ -100,7 +99,6 @@ onUnmounted(() => {
   background: none;
   border: none;
   cursor: pointer;
-  color: #fff;
 }
 
 .header-nav {
@@ -108,11 +106,11 @@ onUnmounted(() => {
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
+  background: black;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translateY(-20rem);
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
   z-index: 99;
 }
@@ -124,24 +122,26 @@ onUnmounted(() => {
 }
 
 .nav-list {
+  height: 120lvh;
   list-style: none;
   padding: 1rem;
+  padding-top: 1.2rem;
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.nav-item a {
+.nav-item h2 {
   display: block;
-  padding: 0.5rem 1rem;
+  /* padding: 1rem 1rem; */
   text-decoration: none;
-  color: #333;
-  border-radius: 4px;
+  color: white;
   transition: background 0.2s;
 }
 
-.nav-item a:hover {
-  background: rgba(0, 0, 0, 0.05);
+.nav-item h2:hover {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.274);
 }
 </style>

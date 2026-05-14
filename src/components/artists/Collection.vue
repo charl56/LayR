@@ -48,6 +48,7 @@ const handleArtistClick = (artist: Artist) => {
 }
 
 .artist-list-header {
+  height: 5rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -97,7 +98,6 @@ const handleArtistClick = (artist: Artist) => {
   color: white;
   background-color: var(--layr-color-1);
 }
-/* // Hover/clique jaune */
 
 
 
