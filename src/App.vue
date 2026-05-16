@@ -28,9 +28,11 @@ const currentData = computed(() =>
 );
 
 // --- Methods
-const goHome = () => {
+const goHome = async () => {
   currentArtistId.value = null;
   currentPage.value = 'home';
+
+  await nextTick();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
