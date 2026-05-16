@@ -21,8 +21,9 @@ export const ARTISTS: Artist[] = [
         image1: 'restinstar.png',
         image2: 'stronboscoo.png',
         projets: [
-            { name: 'RestInStar', img: 'galerie.png' },
-            { name: 'Stronbosco', img: 'galerie.png' }
+            { name: 'RestInStarr', img: 'kelaggs/restinstarr.jpg' },
+            { name: 'Bass Krush', img: 'kelaggs/basskrush.jpg' },
+            { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' }
         ],        
         description: 'Kelaggs redonne à la rue son pouvoir d\'expression, en transformant chaque affiche en expérience à vivre et à garder.',
         spotify: 'https://spotify.com/kelaggs',
@@ -51,11 +52,11 @@ export const ARTISTS: Artist[] = [
         image1: 'artists/luvresval/luvresval1.jpg',
         image2: 'artists/luvresval/luvresval2.jpg',
         projets: [
-            { name: 'Mariah', img: 'artists/luvresval/mariah.jpg' },
-            { name: 'Etoile Noire', img: 'artists/luvresval/etoilenoire.jpg' },
-            { name: 'Etoile Noire 2.0', img: 'artists/luvresval/etoilenoire2.png' },
-            { name: 'Mustafar', img: 'mustafar.jpg' },
-            { name: 'Jutsu', img: 'jutsu.png' }
+            { name: 'Mariah', img: 'luvresval/mariah.jpg' },
+            { name: 'Etoile Noire', img: 'luvresval/etoilenoire.jpg' },
+            { name: 'Etoile Noire 2.0', img: 'luvresval/etoilenoire2.png' },
+            { name: 'Mustafar', img: 'luvresval/mustafar.jpg' },
+            { name: 'Jutsu', img: 'luvresval/jutsu.png' }
         ],
         description: 'Étoile filante du rap français, Luv Resval transforme chaque couplet en poésie urbaine, donnant voix aux sentiments et rêves de sa génération avec une écriture soignée et un flow inégalé.',
         spotify: '',

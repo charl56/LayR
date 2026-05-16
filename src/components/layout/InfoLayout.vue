@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import getAssetSrc from '@/utils/imageUtils';
-import { ref, onMounted, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watchEffect, nextTick } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -32,7 +32,7 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
-      end: "95% bottom",
+      end: "bottom bottom",
       scrub: 1,
     }
   });
@@ -89,14 +89,13 @@ const createPositionAnimation = (textElement: HTMLElement) => {
   }
 };
 
-const initAnimations = () => {
+const initAnimations = async () => {
   if (!containerRef.value) return;
 
-  // ✅ Tuer SEULEMENT les triggers de cette instance
-  triggerRefs.value.forEach(trigger => {
-    trigger.kill();
-  });
+  triggerRefs.value.forEach(trigger => trigger.kill());
   triggerRefs.value = [];
+
+  await nextTick();
 
   if (text1Ref.value) {
     createWordRevealAnimation(text1Ref.value, props.text1, 0);
@@ -115,10 +114,10 @@ onMounted(() => {
    initAnimations();
 });
 
-watchEffect(() => {
+watchEffect(async () => {
   props.text1;
   props.text2;
-  initAnimations();
+  await initAnimations();
 });
 
 onBeforeUnmount(() => {

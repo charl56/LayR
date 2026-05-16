@@ -85,7 +85,7 @@ onBeforeUnmount(() => {
     <h2>Galerie</h2>
 
     <div v-if="showImage" class="image-overlay">
-      <img :src="getAssetSrc(currentProjectImg)" :alt="'Project image'" class="overlay-image" />
+      <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image" />
     </div>
 
     <div v-if="isArtist(currentData)" class="galery-div">
