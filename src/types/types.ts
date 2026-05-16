@@ -1,9 +1,17 @@
 import type { DTOInfo } from "./DTOInfo";
 
-export interface Artist extends DTOInfo  {
+
+export interface Info extends DTOInfo  {
   id: string;
   name: string;
-  images: string[];
+}
+
+export interface Project {
+  name: string;
+  img: string;
+}
+export interface Artist extends DTOInfo, Info  {
+  projets: Project[];
   spotify: string;
   soundcloud: string;
 }

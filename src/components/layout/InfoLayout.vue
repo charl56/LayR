@@ -16,6 +16,9 @@ const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
 const text2Ref = ref<HTMLElement | null>(null);
 
+// ✅ Stocker les triggers de cette instance
+const triggerRefs = ref<ScrollTrigger[]>([]);
+
 const createWordRevealAnimation = (textElement: HTMLElement, textContent: string, staggerDelay: number = 0) => {
   const words = textContent.split(' ');
   
@@ -29,12 +32,16 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
-      end: "bottom 90%",
+      end: "95% bottom",
       scrub: 1,
     }
   });
 
-  // Phase 1 : Apparition progressive des mots
+  // ✅ Sauvegarder le trigger
+  if (tl.scrollTrigger) {
+    triggerRefs.value.push(tl.scrollTrigger);
+  }
+
   wordSpans.forEach((span, index) => {
     tl.to(span, { 
       opacity: 1, 
@@ -42,7 +49,6 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
     }, staggerDelay + index * 0.1);
   });
 
-  // Phase 2 : Disparition progressive des mots
   wordSpans.forEach((span, index) => {
     tl.to(span, { 
       opacity: 0, 
@@ -54,26 +60,21 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
 const createPositionAnimation = (textElement: HTMLElement) => {
   const viewportHeight = window.innerHeight;
 
-  gsap.to(textElement, {
+  const animation = gsap.to(textElement, {
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
-      end: "90% bottom",
+      end: "bottom bottom",
       scrub: 1,
       onUpdate: (self) => {
         const containerTop = containerRef.value!.getBoundingClientRect().top;
         const containerBottom = containerRef.value!.getBoundingClientRect().bottom;
 
-        console.log(containerBottom*0.9 + " : " + viewportHeight)
-
         if (containerTop <= 0 && containerBottom >= viewportHeight) {
-          // Phase 2: Le texte est fixe à l'écran
           gsap.set(textElement, { position: 'fixed', y: 0 });
         } else if (containerTop > 0) {
-          // Phase 1: Scroll normal
           gsap.set(textElement, { position: 'absolute', y: 0 });
         } else if (containerBottom < viewportHeight) {
-          // Phase 3: Montée accélérée avec le container
           const exitProgress = 1 - (containerBottom / viewportHeight);
           const acceleratedExit = exitProgress * exitProgress * viewportHeight;
           gsap.set(textElement, { position: 'absolute', y: -acceleratedExit });
@@ -81,25 +82,27 @@ const createPositionAnimation = (textElement: HTMLElement) => {
       }
     }
   });
+
+  // ✅ Sauvegarder le trigger directement
+  if (animation.scrollTrigger) {
+    triggerRefs.value.push(animation.scrollTrigger);
+  }
 };
 
 const initAnimations = () => {
   if (!containerRef.value) return;
 
-  // Tuer les anciens ScrollTriggers
-  ScrollTrigger.getAll().forEach(trigger => {
-    if (trigger.vars.trigger === containerRef.value) {
-      trigger.kill();
-    }
+  // ✅ Tuer SEULEMENT les triggers de cette instance
+  triggerRefs.value.forEach(trigger => {
+    trigger.kill();
   });
+  triggerRefs.value = [];
 
-  // Animation pour text1
   if (text1Ref.value) {
     createWordRevealAnimation(text1Ref.value, props.text1, 0);
     createPositionAnimation(text1Ref.value);
   }
 
-  // Animation pour text2 (si existe)
   if (text2Ref.value && props.text2) {
     createWordRevealAnimation(text2Ref.value, props.text2, 3);
     createPositionAnimation(text2Ref.value);
@@ -119,11 +122,11 @@ watchEffect(() => {
 });
 
 onBeforeUnmount(() => {
-  ScrollTrigger.getAll().forEach(trigger => {
-    if (trigger.vars.trigger === containerRef.value) {
-      trigger.kill();
-    }
+  // ✅ Nettoyer SEULEMENT cette instance
+  triggerRefs.value.forEach(trigger => {
+    trigger.kill();
   });
+  triggerRefs.value = [];
 });
 </script>
 
