@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ARTISTS } from '@/data/artists';
 import type { Artist, Info } from '@/types/types';
 import getAssetSrc from '@/utils/imageUtils';
 import gsap from 'gsap';
@@ -14,7 +15,7 @@ const props = defineProps<{
 const currentProjectImg = ref<string>('');
 const showImage = ref<boolean>(false);
 const triggerRefs = ref<ScrollTrigger[]>([]);
-const artist = ref<Artist>();
+const artist = ref<Artist>(ARTISTS[0]!);
 
 
 function isArtist(data: Info): data is Artist {
@@ -25,7 +26,6 @@ const initAnimations = () => {
   if (!isArtist(props.currentData)) return;
 
   artist.value = props.currentData as Artist;
-  if (artist.value == undefined) return;
 
   // Tuer les anciens triggers
   triggerRefs.value.forEach(trigger => {
@@ -41,6 +41,7 @@ const initAnimations = () => {
       start: "top center",
       end: "bottom center",
       onEnter: () => {
+        if (artist.value.projets[index] == undefined) return;
         currentProjectImg.value = artist.value.projets[index].img;
         showImage.value = true;
       },
@@ -48,6 +49,7 @@ const initAnimations = () => {
         showImage.value = false;
       },
       onEnterBack: () => {
+        if (artist.value.projets[index] == undefined) return;
         currentProjectImg.value = artist.value.projets[index].img;
         showImage.value = true;
       },
