@@ -121,15 +121,19 @@ onUnmounted(() => {
   transform: translateY(0);
 }
 
+.header-nav--open .nav-list{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .nav-list {
   height: 120svh;
   list-style: none;
   padding: 1rem;
   padding-top: 1.2rem;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: none;
 }
 
 .nav-item h2 {

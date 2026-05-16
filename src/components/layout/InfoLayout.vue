@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import getAssetSrc from '@/utils/imageUtils';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watchEffect } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -29,8 +29,8 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
-      end: "bottom bottom",
-      scrub: 1
+      end: "bottom 90%",
+      scrub: 1,
     }
   });
 
@@ -38,7 +38,7 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
   wordSpans.forEach((span, index) => {
     tl.to(span, { 
       opacity: 1, 
-      duration: 0.5 
+      duration: 0.2,
     }, staggerDelay + index * 0.1);
   });
 
@@ -46,7 +46,7 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
   wordSpans.forEach((span, index) => {
     tl.to(span, { 
       opacity: 0, 
-      duration: 1
+      duration: 1,
     }, staggerDelay + wordSpans.length * 0.1 + index * 0.1);
   });
 };
@@ -58,11 +58,13 @@ const createPositionAnimation = (textElement: HTMLElement) => {
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
-      end: "bottom bottom",
+      end: "90% bottom",
       scrub: 1,
       onUpdate: (self) => {
         const containerTop = containerRef.value!.getBoundingClientRect().top;
         const containerBottom = containerRef.value!.getBoundingClientRect().bottom;
+
+        console.log(containerBottom*0.9 + " : " + viewportHeight)
 
         if (containerTop <= 0 && containerBottom >= viewportHeight) {
           // Phase 2: Le texte est fixe à l'écran
@@ -74,7 +76,6 @@ const createPositionAnimation = (textElement: HTMLElement) => {
           // Phase 3: Montée accélérée avec le container
           const exitProgress = 1 - (containerBottom / viewportHeight);
           const acceleratedExit = exitProgress * exitProgress * viewportHeight;
-          console.log(acceleratedExit)
           gsap.set(textElement, { position: 'absolute', y: -acceleratedExit });
         }
       }
@@ -82,8 +83,15 @@ const createPositionAnimation = (textElement: HTMLElement) => {
   });
 };
 
-onMounted(() => {
+const initAnimations = () => {
   if (!containerRef.value) return;
+
+  // Tuer les anciens ScrollTriggers
+  ScrollTrigger.getAll().forEach(trigger => {
+    if (trigger.vars.trigger === containerRef.value) {
+      trigger.kill();
+    }
+  });
 
   // Animation pour text1
   if (text1Ref.value) {
@@ -93,9 +101,21 @@ onMounted(() => {
 
   // Animation pour text2 (si existe)
   if (text2Ref.value && props.text2) {
-    createWordRevealAnimation(text2Ref.value, props.text2, 0.3);
+    createWordRevealAnimation(text2Ref.value, props.text2, 3);
     createPositionAnimation(text2Ref.value);
   }
+
+  ScrollTrigger.refresh();
+};
+
+onMounted(() => {
+   initAnimations();
+});
+
+watchEffect(() => {
+  props.text1;
+  props.text2;
+  initAnimations();
 });
 
 onBeforeUnmount(() => {
