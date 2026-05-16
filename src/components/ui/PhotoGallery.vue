@@ -26,7 +26,7 @@ const initAnimations = () => {
   if (!isArtist(props.currentData)) return;
 
   artist.value = props.currentData as Artist;
-
+  
   // Tuer les anciens triggers
   triggerRefs.value.forEach(trigger => {
     trigger.kill();
@@ -56,7 +56,6 @@ const initAnimations = () => {
       onLeaveBack: () => {
         showImage.value = false;
       },
-      markers: true  // À retirer après les tests
     });
 
     triggerRefs.value.push(trigger);
@@ -102,7 +101,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .photo-galery {
   width: 100%;
-  min-height: 75svh;
+  min-height: 100svh;
   text-align: center;
   position: relative;
   overflow: hidden;

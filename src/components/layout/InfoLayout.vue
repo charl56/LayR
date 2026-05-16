@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="containerRef" class="info-layout">
+    <div ref="containerRef" class="info-layout" :id="text2 != undefined ? 'home' : ''">
         <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
         <div ref="text1Ref" :class="text2 == undefined ? 'only-one-text' : 'two-text first'">

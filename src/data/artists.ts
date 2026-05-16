@@ -49,7 +49,7 @@ export const ARTISTS: Artist[] = [
         shortBio1: 'Luv Resval est un rappeur français influencé par Young Thug et Lil Uzi Vert, connu pour son approche poétique du rap et ses freestyles viraux.',
         shortBio2: 'Avec son univers fantasy et ses rimes soignées, il a marqué le rap français par des flows chantés et une écriture percutante, mélangeant amour, nostalgie et culture pop.',
         image1: 'artists/luvresval/luvresval1.jpg',
-        image2: 'restinstar.png',
+        image2: 'artists/luvresval/luvresval2.jpg',
         projets: [
             { name: 'Mariah', img: 'artists/luvresval/mariah.jpg' },
             { name: 'Etoile Noire', img: 'artists/luvresval/etoilenoire.jpg' },
