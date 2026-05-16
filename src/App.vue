@@ -8,7 +8,7 @@ import WhoAreWe from './components/layout/WhoAreWe.vue';
 import Contact from './components/layout/Contact.vue';
 
 // --- Imports : Vue
-import { ref, computed, type Ref } from 'vue';
+import { ref, computed, type Ref, nextTick } from 'vue';
 
 // --- Imports : Données et Types
 import { ARTISTS, ACCUEIL } from '@/data/artists';
@@ -34,9 +34,11 @@ const goHome = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-const goToCollection = (artistId: string) => {
+const goToCollection = async (artistId: string) => {
   currentArtistId.value = artistId;
   currentPage.value = 'collection';
+
+  await nextTick();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 

@@ -82,7 +82,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div id="galery" class="photo-galery">
-    <h2>Galerie</h2>
+    <div class="photo-galery-header">
+      <h2>GALERIE</h2>
+    </div>
 
     <div v-if="showImage" class="image-overlay">
       <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image" />
@@ -108,6 +110,13 @@ onBeforeUnmount(() => {
   background: #000000;
   padding: 1rem 0rem;
   color: #fff;
+}
+
+.photo-galery-header{
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .image-overlay {
