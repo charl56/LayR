@@ -1,24 +1,10 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-
-// État pour gérer l'ouverture/fermeture du contenu
-const isOpen = ref(false);
-
-// Fonction pour basculer l'état
-const toggleContent = () => {
-  isOpen.value = !isOpen.value;
-};
-</script>
-
 <template>
     <div id="contact" class="contact">
-        <!-- En-tête cliquable pour déployer/fermer la liste -->
-        <div class="contact-header" @click="toggleContent">
+        <div class="contact-header">
             <h2>CONTACT</h2>
         </div>
         
-        <!-- Contenu des icônes (affichée si isOpen = true) -->
-        <div v-if="isOpen" class="contact-icons">
+        <div class="contact-icons">
             <a class="icon-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/facebook.svg"/>

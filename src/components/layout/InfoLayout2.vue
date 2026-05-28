@@ -8,13 +8,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 const props = defineProps<{
   text1: string,
-  text2: string,
   imageUrl: string
 }>();
 
 const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
-const text2Ref = ref<HTMLElement | null>(null);
 
 // ✅ Stocker les triggers de cette instance
 const triggerRefs = ref<ScrollTrigger[]>([]);
@@ -48,30 +46,31 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
       duration: 0.2,
     }, staggerDelay + index * 0.1);
   });
+
 };
 
-const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) => {
+const createPositionAnimation = (textElement: HTMLElement) => {
   const viewportHeight = window.innerHeight;
-    console.log(viewportHeight)
+
   const animation = gsap.to(textElement, {
     scrollTrigger: {
       trigger: containerRef.value,
       start: "top top",
       end: "bottom bottom",
       scrub: 1,
-       onUpdate: (self) => {
+      // markers: true,
+      onUpdate: (self) => {
         if (self.progress < 1) {
           // ✅ FIXED pendant qu'on scrolle dans le container
           gsap.set(textElement, { 
             position: 'fixed',
-            top: isBottom ? 'auto' : '120px',
-            bottom: isBottom ? '120px' : 'auto',
+            top: '50svh',
           });
         } else {
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
           gsap.set(textElement, { 
             position: 'absolute',
-            top: isBottom ? 'auto' : (viewportHeight/2 + 120)+'px',
+            top: (viewportHeight)+'px',
           });
         }
       }
@@ -94,12 +93,7 @@ const initAnimations = async () => {
 
   if (text1Ref.value) {
     createWordRevealAnimation(text1Ref.value, props.text1, 0);
-    createPositionAnimation(text1Ref.value, false);
-  }
-
-  if (text2Ref.value) {
-    createWordRevealAnimation(text2Ref.value, props.text2, 2);
-    createPositionAnimation(text2Ref.value, true);
+    createPositionAnimation(text1Ref.value);
   }
 
   ScrollTrigger.refresh();
@@ -111,7 +105,6 @@ onMounted(() => {
 
 watchEffect(async () => {
   props.text1;
-  props.text2;
   await initAnimations();
 });
 
@@ -125,15 +118,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="containerRef" class="info-layout" id="home">
+    <div ref="containerRef" class="info-layout">
         <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
-        <div ref="text1Ref" class="two-text first">
+        <div ref="text1Ref" class="only-one-text">
             <p>{{ text1 }}</p>
-        </div>
-
-        <div v-if="text2 != undefined" ref="text2Ref" class="two-text second">
-            <p>{{ text2 }}</p>
         </div>
     </div>
 </template>
@@ -154,30 +143,23 @@ onBeforeUnmount(() => {
     object-position: center;
 }
 
-
-.two-text {
-    width: 80%;
+.only-one-text {
+    width: 90%;
     /* position: absolute; */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     color: #fff;
     will-change: transform;
 }
 
-.two-text p {
+.only-one-text p {
     margin: 0;
 }
 
-.first {
-    /* top: 120px; */
-    left: 1rem;
-}
-
-.second {
-    /* bottom: 120px; */
-    right: 1rem;
-    text-align: end;
-}
-
-.two-text span {
+.only-one-text span {
     display: inline;
     margin-right: 0.3em;
 }

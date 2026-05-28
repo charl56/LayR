@@ -2,6 +2,7 @@
 // --- Imports : Composants
 import AppHeader from '@/components/layout/AppHeader.vue';
 import InfoLayout from './components/layout/InfoLayout.vue';
+import InfoLayout2 from './components/layout/InfoLayout2.vue';
 import Collection from '@/components/artists/Collection.vue';
 import PhotoGallery from '@/components/ui/PhotoGallery.vue';
 import WhoAreWe from './components/layout/WhoAreWe.vue';
@@ -61,7 +62,7 @@ const goToCollection = async (artistId: string) => {
 
     <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" />
     <Collection :onCollectionButton="goToCollection" />
-    <InfoLayout :text1="currentData.description" :image-url="currentData.image2" />
+    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" />
 
     <PhotoGallery v-if="currentPage=='collection'" :currentData="currentData" />
     <WhoAreWe v-else />
