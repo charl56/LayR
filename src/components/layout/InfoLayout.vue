@@ -46,13 +46,13 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
     tl.to(span, { 
       opacity: 1, 
       duration: 0.2,
+      marginRight: '0.2rem',
     }, staggerDelay + index * 0.1);
   });
 };
 
 const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) => {
   const viewportHeight = window.innerHeight;
-    console.log(viewportHeight)
   const animation = gsap.to(textElement, {
     scrollTrigger: {
       trigger: containerRef.value,

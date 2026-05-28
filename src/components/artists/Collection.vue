@@ -7,7 +7,9 @@ const props = defineProps<{
   onCollectionButton: (id: string) => void;
 }>();
 
-const emit = defineEmits(['selectArtist']);
+const emit = defineEmits<{
+  'update:isOpen': [value: boolean]
+}>();
 
 // État pour gérer l'ouverture/fermeture de la liste
 const isOpen = ref(false);
@@ -15,6 +17,7 @@ const isOpen = ref(false);
 // Fonction pour basculer l'état de la liste
 const toggleList = () => {
   isOpen.value = !isOpen.value;
+  emit('update:isOpen', isOpen.value); 
 };
 
 // Fonction pour gérer le clic sur un artiste
@@ -22,6 +25,8 @@ const handleArtistClick = (artist: Artist) => {
   props.onCollectionButton(artist.id);
   isOpen.value = false;
 };
+
+
 </script>
 
 <template>

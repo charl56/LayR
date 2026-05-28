@@ -25,9 +25,8 @@ ContactIcons (liens réseaux)
 
 
 ## US : 
-- Layout 2 : laisser text aprem animation
 - Pour animation text 2eme feuille, si on ouvre collection, il faudrait que le start et stop soient décalés (pareil pour la galerie)
-+ espace entre les span
+
 
 
 - remonter en haut de la page après choix artiste

@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import getAssetSrc from '@/utils/imageUtils';
-import { ref, onMounted, onBeforeUnmount, watchEffect, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch, watchEffect, nextTick } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Collection from '@/components/artists/Collection.vue';
+
 
 gsap.registerPlugin(ScrollTrigger);
 
 const props = defineProps<{
   text1: string,
-  imageUrl: string
+  imageUrl: string,
+  isCollectionOpen: boolean
 }>();
 
 const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
-
+const isCollectionOpen = ref<boolean>(false);
 // ✅ Stocker les triggers de cette instance
 const triggerRefs = ref<ScrollTrigger[]>([]);
 
 const createWordRevealAnimation = (textElement: HTMLElement, textContent: string, staggerDelay: number = 0) => {
   const words = textContent.split(' ');
-  
+
   textElement.innerHTML = words
     .map(word => `<span style="opacity: 0;">${word}</span>`)
     .join(' ');
@@ -41,9 +44,10 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
   }
 
   wordSpans.forEach((span, index) => {
-    tl.to(span, { 
-      opacity: 1, 
+    tl.to(span, {
+      opacity: 1,
       duration: 0.2,
+      marginRight: '0.2rem',
     }, staggerDelay + index * 0.1);
   });
 
@@ -62,15 +66,15 @@ const createPositionAnimation = (textElement: HTMLElement) => {
       onUpdate: (self) => {
         if (self.progress < 1) {
           // ✅ FIXED pendant qu'on scrolle dans le container
-          gsap.set(textElement, { 
+          gsap.set(textElement, {
             position: 'fixed',
-            top: '50svh',
+            top: (viewportHeight/2) + 'px',
           });
         } else {
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
-          gsap.set(textElement, { 
+          gsap.set(textElement, {
             position: 'absolute',
-            top: (viewportHeight)+'px',
+            top: viewportHeight + 'px',
           });
         }
       }
@@ -100,8 +104,21 @@ const initAnimations = async () => {
 };
 
 onMounted(() => {
-   initAnimations();
+  initAnimations();
 });
+
+
+watch(
+  () => props.isCollectionOpen,
+  async () => {
+    isCollectionOpen.value = props.isCollectionOpen;
+
+    // Attendre que le DOM se mette à jour
+    await nextTick();
+    // Recalculer les animations
+    await initAnimations();
+  }
+);
 
 watchEffect(async () => {
   props.text1;
@@ -118,49 +135,51 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="containerRef" class="info-layout">
-        <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
+  <div ref="containerRef" class="info-layout">
+    <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
-        <div ref="text1Ref" class="only-one-text">
-            <p>{{ text1 }}</p>
-        </div>
+    <div ref="text1Ref" class="only-one-text">
+      <p>{{ text1 }}</p>
     </div>
+  </div>
 </template>
 
 <style scoped>
 .info-layout {
-    height: 150svh;
-    width: 100%;
-    padding: 0;
-    position: relative;
-    overflow: hidden;
+  height: 150svh;
+  width: 100%;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .info-layout_img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .only-one-text {
-    width: 90%;
-    /* position: absolute; */
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #fff;
-    will-change: transform;
+  width: 90%;
+  left: 5%;
+  /* position: absolute; */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  will-change: transform;
+
+  span {
+    display: inline;
+    margin-right: 0.3em;
+  }
 }
 
 .only-one-text p {
-    margin: 0;
+  margin: 0;
 }
 
-.only-one-text span {
-    display: inline;
-    margin-right: 0.3em;
-}
 </style>

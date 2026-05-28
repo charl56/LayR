@@ -22,7 +22,7 @@ import type { ScannedPhoto, Page } from '@/types/types';
 const currentPage: Ref<Page> = ref('home');
 const currentArtistId: Ref<string | null> = ref(null);
 const scannedPhotos: Ref<ScannedPhoto[]> = ref([]);
-
+const isCollectionOpen: Ref<boolean> = ref(false);
 // --- Computed
 const currentData = computed(() =>
   ARTISTS.find((a) => a.id === currentArtistId.value) || ACCUEIL
@@ -61,8 +61,8 @@ const goToCollection = async (artistId: string) => {
     <AppHeader :current-page="currentPage" :onHomeButton="goHome" />
 
     <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" />
-    <Collection :onCollectionButton="goToCollection" />
-    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" />
+    <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event"/>
+    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :isCollectionOpen="isCollectionOpen" />
 
     <PhotoGallery v-if="currentPage=='collection'" :currentData="currentData" />
     <WhoAreWe v-else />
