@@ -25,9 +25,6 @@ ContactIcons (liens réseaux)
 
 
 ## US : 
-- Pour animation text 2eme feuille, si on ouvre collection, il faudrait que le start et stop soient décalés (pareil pour la galerie)
-
-
 
 - remonter en haut de la page après choix artiste
 - Charger les images de la galerie, au choix de l'artiste
