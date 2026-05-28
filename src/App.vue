@@ -33,16 +33,20 @@ const goHome = async () => {
   currentArtistId.value = null;
   currentPage.value = 'home';
 
+  await new Promise(resolve => setTimeout(resolve, 100));
+
   await nextTick();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scroll({ top: 0, behavior: 'auto' });
 };
 
 const goToCollection = async (artistId: string) => {
   currentArtistId.value = artistId;
   currentPage.value = 'collection';
 
+  await new Promise(resolve => setTimeout(resolve, 100));
+
   await nextTick();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scroll({ top: 0, behavior: 'auto' });
 };
 
 // const addScannedPhoto = (photo: ScannedPhoto) => {

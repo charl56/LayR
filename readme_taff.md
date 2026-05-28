@@ -27,6 +27,8 @@ ContactIcons (liens réseaux)
 ## US : 
 
 - remonter en haut de la page après choix artiste
+  OOKKK ????
+  
 - Charger les images de la galerie, au choix de l'artiste
 - logo deezer, soundcloud
 - logo menu plus maigre
