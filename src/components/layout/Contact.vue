@@ -21,6 +21,10 @@
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
             </a>
+            <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
+                rel="noopener noreferrer">
+                <img alt="Logo" class="logo" src="@/assets/mail.webp"/>
+            </a>
         </div>
 
     </div>
@@ -58,11 +62,14 @@
 
 .icon-contact{
     height: 100%;
-    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.1rem;
 }
 
 .icon-contact img {
-    height: 56px;
-    width: 56px;
+    height: 50px;
+    width: 50px;
 }
 </style>

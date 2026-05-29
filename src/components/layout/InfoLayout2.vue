@@ -55,6 +55,7 @@ const createWordRevealAnimation = (textElement: HTMLElement, textContent: string
 
 const createPositionAnimation = (textElement: HTMLElement) => {
   const viewportHeight = window.innerHeight;
+  console.log("CreatePoitioANiation")
 
   const animation = gsap.to(textElement, {
     scrollTrigger: {
@@ -62,19 +63,21 @@ const createPositionAnimation = (textElement: HTMLElement) => {
       start: "top top",
       end: "bottom bottom",
       scrub: 1,
-      // markers: true,
+      markers: true,
       onUpdate: (self) => {
         if (self.progress < 1) {
+          console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
           // ✅ FIXED pendant qu'on scrolle dans le container
           gsap.set(textElement, {
             position: 'fixed',
-            top: (viewportHeight/2) + 'px',
+            bottom: (viewportHeight/2) + 'px',
           });
         } else {
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
+          console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
           gsap.set(textElement, {
             position: 'absolute',
-            top: viewportHeight + 'px',
+            // bottom: viewportHeight + 'px',
           });
         }
       }
@@ -105,6 +108,16 @@ const initAnimations = async () => {
 
 onMounted(() => {
   initAnimations();
+
+    const resizeObserver = new ResizeObserver(async () => {
+      await initAnimations();
+    });
+
+    if(containerRef.value) resizeObserver.observe(containerRef.value);
+
+    onBeforeUnmount(() => {
+      resizeObserver.disconnect();
+    });
 });
 
 
@@ -119,11 +132,6 @@ watch(
     await initAnimations();
   }
 );
-
-watchEffect(async () => {
-  props.text1;
-  await initAnimations();
-});
 
 onBeforeUnmount(() => {
   // ✅ Nettoyer SEULEMENT cette instance

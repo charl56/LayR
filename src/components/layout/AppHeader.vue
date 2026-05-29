@@ -42,7 +42,7 @@ onUnmounted(() => {
         </a>
       </button>
       <button class="menu-toggle" @click.stop="menuOpen = !menuOpen" aria-label="Toggle menu">
-        <img alt="Logo" class="logo" src="@/assets/burger.svg" width="60" height="60" />
+        <img alt="Logo" class="logo" src="@/assets/burger.svg" width="50" height="50" />
       </button>
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
