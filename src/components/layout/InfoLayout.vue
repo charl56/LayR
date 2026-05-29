@@ -110,28 +110,16 @@ const initAnimations = async () => {
 onMounted(() => {
    initAnimations();
 
-    window.addEventListener('resize', handleWindowResize);
-
     const resizeObserver = new ResizeObserver(async () => {
-      console.log("resizeObserver")
       await initAnimations();
     });
 
-    resizeObserver.observe(containerRef.value);
+    if(containerRef.value) resizeObserver.observe(containerRef.value);
 
     onBeforeUnmount(() => {
       resizeObserver.disconnect();
     });
   });
-
-
-const handleWindowResize = () => {
-  // ✅ Utiliser un timeout pour éviter les appels multiples
- 
-  console.log("handlewindowresize")
-    console.log('Window resized:', window.innerHeight);
-    initAnimations();
-};
 
 
 onBeforeUnmount(() => {
