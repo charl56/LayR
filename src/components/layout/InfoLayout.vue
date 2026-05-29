@@ -68,6 +68,7 @@ const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) =>
             bottom: isBottom ? '120px' : 'auto',
           });
         } else {
+          console.log("Height : " + viewportHeight + " | Top : " + (viewportHeight/2 + 120))
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
           gsap.set(textElement, { 
             position: 'absolute',
@@ -85,6 +86,7 @@ const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) =>
 };
 
 const initAnimations = async () => {
+  console.log("initAniation")
   if (!containerRef.value) return;
 
   triggerRefs.value.forEach(trigger => trigger.kill());
@@ -107,13 +109,30 @@ const initAnimations = async () => {
 
 onMounted(() => {
    initAnimations();
-});
 
-watchEffect(async () => {
-  props.text1;
-  props.text2;
-  await initAnimations();
-});
+    window.addEventListener('resize', handleWindowResize);
+
+    const resizeObserver = new ResizeObserver(async () => {
+      console.log("resizeObserver")
+      await initAnimations();
+    });
+
+    resizeObserver.observe(containerRef.value);
+
+    onBeforeUnmount(() => {
+      resizeObserver.disconnect();
+    });
+  });
+
+
+const handleWindowResize = () => {
+  // ✅ Utiliser un timeout pour éviter les appels multiples
+ 
+  console.log("handlewindowresize")
+    console.log('Window resized:', window.innerHeight);
+    initAnimations();
+};
+
 
 onBeforeUnmount(() => {
   // ✅ Nettoyer SEULEMENT cette instance
