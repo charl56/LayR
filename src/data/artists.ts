@@ -26,8 +26,10 @@ export const ARTISTS: Artist[] = [
             { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' }
         ],        
         description: 'Kelaggs redonne à la rue son pouvoir d\'expression, en transformant chaque affiche en expérience à vivre et à garder.',
-        spotify: 'https://spotify.com/kelaggs',
-        soundcloud: 'https://soundcloud.com/kelaggs'
+        links: {
+            spotify: 'https://spotify.com/kelaggs',
+            soundcloud: 'https://soundcloud.com/kelaggs'
+        }
     },
     {
         id: 'dimes',
@@ -41,8 +43,6 @@ export const ARTISTS: Artist[] = [
             { name: 'Stronbosco', img: 'galerie.png' }
         ],
         description: 'Dimes transforme les murs en galeries éphémères, donnant vie aux rues avec chaque coup de pinceau et chaque pixel.',
-        spotify: '',
-        soundcloud: ''
     },
     {
         id: 'luvresval',
@@ -59,7 +59,10 @@ export const ARTISTS: Artist[] = [
             { name: 'Jutsu', img: 'luvresval/jutsu.png' }
         ],
         description: 'Étoile filante du rap français, Luv Resval transforme chaque couplet en poésie urbaine, donnant voix aux sentiments et rêves de sa génération avec une écriture soignée et un flow inégalé.',
-        spotify: '',
-        soundcloud: ''
+        links: {
+            spotify: 'https://open.spotify.com/intl-fr/artist/5l8WyvJ50fdSghK2ySNq1y',
+            soundcloud: 'https://soundcloud.com/91666',
+            deezer: 'https://www.deezer.com/fr/artist/53325902'
+        }
     },
 ];

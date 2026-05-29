@@ -66,7 +66,7 @@ const goToCollection = async (artistId: string) => {
 
     <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" />
     <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event"/>
-    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :isCollectionOpen="isCollectionOpen" />
+    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links" :isCollectionOpen="isCollectionOpen" />
 
     <PhotoGallery v-if="currentPage=='collection'" :currentData="currentData" />
     <WhoAreWe v-else />

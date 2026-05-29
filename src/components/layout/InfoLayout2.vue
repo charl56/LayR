@@ -4,6 +4,7 @@ import { ref, onMounted, onBeforeUnmount, watch, watchEffect, nextTick } from 'v
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Collection from '@/components/artists/Collection.vue';
+import type { Links } from '@/types/types';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -12,11 +13,13 @@ const props = defineProps<{
   text1: string,
   imageUrl: string,
   isCollectionOpen: boolean
+  links?: Links
 }>();
 
 const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
-const isCollectionOpen = ref<boolean>(false);
+const linksRef = ref<HTMLElement | null>(null);
+  
 // ✅ Stocker les triggers de cette instance
 const triggerRefs = ref<ScrollTrigger[]>([]);
 
@@ -63,21 +66,20 @@ const createPositionAnimation = (textElement: HTMLElement) => {
       start: "top top",
       end: "bottom bottom",
       scrub: 1,
-      markers: true,
+      // markers: true,
       onUpdate: (self) => {
         if (self.progress < 1) {
           console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
           // ✅ FIXED pendant qu'on scrolle dans le container
           gsap.set(textElement, {
             position: 'fixed',
-            bottom: (viewportHeight/2) + 'px',
+            bottom: (viewportHeight*0.6) + 'px',
           });
         } else {
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
           console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
           gsap.set(textElement, {
             position: 'absolute',
-            // bottom: viewportHeight + 'px',
           });
         }
       }
@@ -103,6 +105,11 @@ const initAnimations = async () => {
     createPositionAnimation(text1Ref.value);
   }
 
+    if (linksRef.value) {
+    // createWordRevealAnimation(linksRef.value, props.text1, 0);
+    createPositionAnimation(linksRef.value);
+  }
+
   ScrollTrigger.refresh();
 };
 
@@ -121,18 +128,6 @@ onMounted(() => {
 });
 
 
-watch(
-  () => props.isCollectionOpen,
-  async () => {
-    isCollectionOpen.value = props.isCollectionOpen;
-
-    // Attendre que le DOM se mette à jour
-    await nextTick();
-    // Recalculer les animations
-    await initAnimations();
-  }
-);
-
 onBeforeUnmount(() => {
   // ✅ Nettoyer SEULEMENT cette instance
   triggerRefs.value.forEach(trigger => {
@@ -148,6 +143,17 @@ onBeforeUnmount(() => {
 
     <div ref="text1Ref" class="only-one-text">
       <p>{{ text1 }}</p>
+    </div>
+    <div v-if="links != null" class="icons-music__div" ref="linksRef">
+      <a v-if="links.soundcloud" class="icon-music" aria-label="Toggle menu" :href="links.soundcloud" target="_blank" rel="noopener noreferrer">
+        <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
+      </a>
+      <a v-if="links.spotify" class="icon-music" aria-label="Toggle menu" :href="links.spotify" target="_blank" rel="noopener noreferrer">
+        <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
+      </a>
+      <a v-if="links.deezer" class="icon-music" aria-label="Toggle menu" :href="links.deezer" target="_blank" rel="noopener noreferrer">
+        <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
+      </a>
     </div>
   </div>
 </template>
@@ -179,6 +185,7 @@ onBeforeUnmount(() => {
   text-align: center;
   color: #fff;
   will-change: transform;
+  pointer-events: none;
 
   span {
     display: inline;
@@ -190,4 +197,26 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
+
+
+.only-one-text + .icons-music__div{
+  position: relative;
+  bottom: 20rem;
+  display: flex;
+  justify-content: center;
+}
+
+
+.icon-music{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.1rem;
+}
+
+.icon-music img {
+    height: 50px;
+    width: 50px;
+}
 </style>

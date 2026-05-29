@@ -40,6 +40,7 @@ const initAnimations = () => {
       trigger: card,
       start: "top center",
       end: "bottom center",
+      markers: true,
       onEnter: () => {
         if (artist.value.projets[index] == undefined) return;
         currentProjectImg.value = artist.value.projets[index].img;
@@ -86,7 +87,17 @@ onBeforeUnmount(() => {
       <h2>GALERIE</h2>
     </div>
 
-    <div v-if="showImage" class="image-overlay">
+    <!-- PreLoad imgs -->
+    <div style="display: none;">
+      <img 
+        v-for="projet in isArtist(currentData) ? currentData.projets : []" 
+        :key="projet.img"
+        :src="getAssetSrc(`artists/${projet.img}`)" 
+        :alt="projet.name"
+      />
+    </div>
+
+    <div class="image-overlay" :class="showImage ? '' : 'hide-image'">
       <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image" />
     </div>
 
@@ -125,11 +136,18 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   height: 100%;
+  opacity: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
   pointer-events: none;
+  transition: 0.2s ease-in-out;
+}
+
+.hide-image {
+  position: fixed;
+  opacity: 0;
 }
 
 .overlay-image {

@@ -26,10 +26,6 @@ ContactIcons (liens réseaux)
 
 ## US : 
 - Les textes des infoLayout se déplace en fonction de la taille de l'écran (scroll bas/haut ouvre barre au dessus) -> Casse les couilles  
-- Charger les images de la galerie, au choix de l'artiste
-- logo deezer, soundcloud
-
-- effet apparition image plus smooth 
 
 
 - Bouton scanner : en bas de l'écran au début, puis au scroll en bas sur la gauche en plus petit

@@ -62,10 +62,12 @@ const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) =>
        onUpdate: (self) => {
         if (self.progress < 1) {
           // ✅ FIXED pendant qu'on scrolle dans le container
+          console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
+
           gsap.set(textElement, { 
             position: 'fixed',
             top: isBottom ? 'auto' : '120px',
-            bottom: isBottom ? '120px' : 'auto',
+            bottom: isBottom ? '7rem' : 'auto',
           });
         } else {
           console.log("Height : " + viewportHeight + " | Top : " + (viewportHeight/2 + 120))
