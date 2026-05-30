@@ -40,7 +40,7 @@ const initAnimations = () => {
       trigger: card,
       start: "top center",
       end: "bottom center",
-      markers: true,
+      // markers: true,
       onEnter: () => {
         if (artist.value.projets[index] == undefined) return;
         currentProjectImg.value = artist.value.projets[index].img;

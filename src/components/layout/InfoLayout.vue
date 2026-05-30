@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import getAssetSrc from '@/utils/imageUtils';
-import { ref, onMounted, onBeforeUnmount, watchEffect, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -16,181 +16,141 @@ const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
 const text2Ref = ref<HTMLElement | null>(null);
 
-// ✅ Stocker les triggers de cette instance
-const triggerRefs = ref<ScrollTrigger[]>([]);
+const ctx = ref<gsap.Context | null>(null);
 
-const createWordRevealAnimation = (textElement: HTMLElement, textContent: string, staggerDelay: number = 0) => {
+const prepareText = (textElement: HTMLElement, textContent: string) => {
   const words = textContent.split(' ');
-  
   textElement.innerHTML = words
-    .map(word => `<span style="opacity: 0;">${word}</span>`)
+    .map(word => `<span class="word-span">${word}</span>`)
     .join(' ');
-
-  const wordSpans = textElement.querySelectorAll('span');
-
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: containerRef.value,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1,
-    }
-  });
-
-  // ✅ Sauvegarder le trigger
-  if (tl.scrollTrigger) {
-    triggerRefs.value.push(tl.scrollTrigger);
-  }
-
-  wordSpans.forEach((span, index) => {
-    tl.to(span, { 
-      opacity: 1, 
-      duration: 0.2,
-      marginRight: '0.2rem',
-    }, staggerDelay + index * 0.1);
-  });
-};
-
-const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) => {
-  const viewportHeight = window.innerHeight;
-  const animation = gsap.to(textElement, {
-    scrollTrigger: {
-      trigger: containerRef.value,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1,
-       onUpdate: (self) => {
-        if (self.progress < 1) {
-          // ✅ FIXED pendant qu'on scrolle dans le container
-          console.log("Height " + viewportHeight + " | bottom " + (viewportHeight/2))
-
-          gsap.set(textElement, { 
-            position: 'fixed',
-            top: isBottom ? 'auto' : '15vh',
-            bottom: isBottom ? '15vh' : 'auto',
-          });
-        } else {
-          console.log("Height : " + viewportHeight + " | Top : " + (viewportHeight/2 + 120))
-          // ✅ ABSOLUTE une fois qu'on atteint le bas du container
-          gsap.set(textElement, { 
-            position: 'absolute',
-            top: isBottom ? 'auto' : '50svh',
-            // top: isBottom ? 'auto' : (viewportHeight/2 + 120)+'px',
-
-            
-          });
-        }
-      }
-    }
-  });
-
-  // ✅ Sauvegarder le trigger directement
-  if (animation.scrollTrigger) {
-    triggerRefs.value.push(animation.scrollTrigger);
-  }
 };
 
 const initAnimations = async () => {
-  console.log("initAniation")
   if (!containerRef.value) return;
 
-  triggerRefs.value.forEach(trigger => trigger.kill());
-  triggerRefs.value = [];
+  if (ctx.value) ctx.value.revert();
 
   await nextTick();
 
-  if (text1Ref.value) {
-    createWordRevealAnimation(text1Ref.value, props.text1, 0);
-    createPositionAnimation(text1Ref.value, false);
-  }
+  if (text1Ref.value) prepareText(text1Ref.value, props.text1);
+  if (text2Ref.value) prepareText(text2Ref.value, props.text2);
 
-  if (text2Ref.value) {
-    createWordRevealAnimation(text2Ref.value, props.text2, 2);
-    createPositionAnimation(text2Ref.value, true);
-  }
+  ctx.value = gsap.context(() => {
+    
+    // 💡 La magie est ici : on pin le container complet.
+    // L'écran va se figer pendant un scroll équivalent à "+=50%" de la hauteur de l'écran.
+    // Cela simule parfaitement tes 150svh (100vh de base + 50% de scroll figé).
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.value,
+        start: "top top",
+        end: "+=50%", // ⬅️ Ajuste cette valeur pour scroller plus ou moins longtemps (+=100%, etc.)
+        scrub: 1,
+        pin: true, 
+        invalidateOnRefresh: true,
+      }
+    });
 
-  ScrollTrigger.refresh();
+    if (text1Ref.value) {
+      const spans1 = text1Ref.value.querySelectorAll('.word-span');
+      tl.to(spans1, {
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.1
+      }, 0);
+    }
+
+    if (text2Ref.value) {
+      const spans2 = text2Ref.value.querySelectorAll('.word-span');
+      tl.to(spans2, {
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.1
+      }, 0.3); // Démarre pendant que le premier finit
+    }
+
+  }, containerRef.value);
 };
 
 onMounted(() => {
-   initAnimations();
+  initAnimations();
 
-    const resizeObserver = new ResizeObserver(async () => {
-      await initAnimations();
-    });
+  let width = window.innerWidth;
+  const onResize = () => {
+    if (window.innerWidth !== width) {
+      width = window.innerWidth;
+      initAnimations();
+    }
+  };
 
-    if(containerRef.value) resizeObserver.observe(containerRef.value);
+  window.addEventListener('resize', onResize);
 
-    onBeforeUnmount(() => {
-      resizeObserver.disconnect();
-    });
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', onResize);
+    if (ctx.value) ctx.value.revert();
   });
-
-
-onBeforeUnmount(() => {
-  // ✅ Nettoyer SEULEMENT cette instance
-  triggerRefs.value.forEach(trigger => {
-    trigger.kill();
-  });
-  triggerRefs.value = [];
 });
 </script>
 
 <template>
-    <div ref="containerRef" class="info-layout" id="home">
-        <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
+  <div ref="containerRef" class="info-layout" id="home">
+    <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
-        <div ref="text1Ref" class="two-text first">
-            <p>{{ text1 }}</p>
-        </div>
-
-        <div v-if="text2 != undefined" ref="text2Ref" class="two-text second">
-            <p>{{ text2 }}</p>
-        </div>
+    <div ref="text1Ref" class="two-text first">
+      <p>{{ text1 }}</p>
     </div>
+
+    <div ref="text2Ref" class="two-text second">
+      <p>{{ text2 }}</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .info-layout {
-    height: 150svh;
-    width: 100%;
-    padding: 0;
-    position: relative;
-    overflow: hidden;
+  height: 100vh; /* Garder 100vh ici. C'est GSAP qui va créer l'espace de scroll virtuel en injectant du padding automatique */
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .info-layout_img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
-
 .two-text {
-    width: 80%;
-    /* position: absolute; */
-    color: #fff;
-    will-change: transform;
+  width: 80%;
+  color: #fff;
+  position: absolute;
+  z-index: 2;
+  will-change: transform, opacity;
 }
 
 .two-text p {
-    margin: 0;
+  margin: 0;
 }
 
 .first {
-    /* top: 120px; */
-    left: 1rem;
+  top: 15vh; /* Reste calé proprement en haut, sans sauter avec la barre mobile */
+  left: 1rem;
 }
 
 .second {
-    /* bottom: 120px; */
-    right: 1rem;
-    text-align: end;
+  bottom: 15vh; /* Reste calé proprement en bas, sans sauter avec la barre mobile */
+  right: 1rem;
+  text-align: end;
 }
 
-.two-text span {
-    display: inline;
-    margin-right: 0.3em;
+:deep(.word-span) {
+  display: inline-block;
+  opacity: 0;
+  margin-right: 0.25rem;
 }
 </style>
