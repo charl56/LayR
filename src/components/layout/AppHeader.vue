@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import type { Page } from '@/types/types';
+import { useRouter, useRoute } from 'vue-router';
+import { useNavigationStore } from '@/composables/useNavigationStore';
 
-const props = defineProps<{
-  currentPage: Page;
-  onHomeButton: () => void;
-}>();
+
+const { 
+  currentPage, 
+} = useNavigationStore();
 
 const menuOpen = ref(false);
 const headerNavRef = ref<HTMLElement | null>(null);
+const router = useRouter();
 
-const onHomeEvent = () => {
+const onHomeEvent = (path?: string) => {
   menuOpen.value = false;
-  props.onHomeButton()
+  router.push(`/${path ? `#${path}` : ''}`);
 };
 
 // Fonction pour fermer le menu si on clique en dehors
@@ -37,9 +39,7 @@ onUnmounted(() => {
   <header class="app-header" :class="{ 'app-header--open': menuOpen }">
     <div class="header-content">
       <button class="menu-toggle" @click.stop="onHomeEvent()" aria-label="Toggle menu">
-        <a href="#home">
           <img alt="Logo" class="logo" src="@/assets/logo.svg" width="70" height="70" />
-        </a>
       </button>
       <button class="menu-toggle" @click.stop="menuOpen = !menuOpen" aria-label="Toggle menu">
         <img alt="Logo" class="logo" src="@/assets/burger.svg" width="50" height="50" />
@@ -47,21 +47,21 @@ onUnmounted(() => {
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="#home" @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
+            <a  @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
           </li>
           <li class="nav-item">
-            <a href="#collection" @click.stop="menuOpen = false"><h2>COLLECTIONS</h2></a>
+            <a @click.stop="onHomeEvent('collection')"><h2>COLLECTIONS</h2></a>
           </li>
 
           <li v-if="currentPage == 'home'" class="nav-item">
-            <a href="#about" @click.stop="menuOpen = false"><h2>QUI SOMMES-NOUS</h2></a>
+            <a @click.stop="onHomeEvent('about')"><h2>QUI SOMMES-NOUS</h2></a>
           </li>
           <li v-else class="nav-item">
-            <a href="#galery" @click.stop="menuOpen = false"><h2>GALLERIE</h2></a>
+            <a @click.stop="onHomeEvent('gallery')"><h2>GALLERIE</h2></a>
           </li>
 
           <li class="nav-item">
-            <a href="#contact" @click.stop="menuOpen = false"><h2>CONTACT</h2></a>
+            <a @click.stop="onHomeEvent('contact')"><h2>CONTACT</h2></a>
           </li>
         </ul>
       </nav>

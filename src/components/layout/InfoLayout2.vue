@@ -46,7 +46,7 @@ const initAnimations = async () => {
         end: "+=50%",
         scrub: 1,
         pin: true,
-        pinSpacing: "50%", // 📌 Indique à GSAP de pousser proprement le composant du dessous (Collection)
+        pinSpacing: true, // 📌 Indique à GSAP de pousser proprement le composant du dessous (Collection)
         invalidateOnRefresh: true,
       }
     });
