@@ -74,7 +74,7 @@ const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) =>
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
           gsap.set(textElement, { 
             position: 'absolute',
-            top: isBottom ? 'auto' : '65svh',
+            top: isBottom ? 'auto' : '55svh',
             // top: isBottom ? 'auto' : (viewportHeight/2 + 120)+'px',
 
             
