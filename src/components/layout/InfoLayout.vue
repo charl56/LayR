@@ -66,15 +66,18 @@ const createPositionAnimation = (textElement: HTMLElement, isBottom: boolean) =>
 
           gsap.set(textElement, { 
             position: 'fixed',
-            top: isBottom ? 'auto' : '120px',
-            bottom: isBottom ? '7rem' : 'auto',
+            top: isBottom ? 'auto' : '15vh',
+            bottom: isBottom ? '15vh' : 'auto',
           });
         } else {
           console.log("Height : " + viewportHeight + " | Top : " + (viewportHeight/2 + 120))
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container
           gsap.set(textElement, { 
             position: 'absolute',
-            top: isBottom ? 'auto' : (viewportHeight/2 + 120)+'px',
+            top: isBottom ? 'auto' : '65vh',
+            // top: isBottom ? 'auto' : (viewportHeight/2 + 120)+'px',
+
+            
           });
         }
       }

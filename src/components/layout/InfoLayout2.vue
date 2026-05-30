@@ -73,7 +73,7 @@ const createPositionAnimation = (textElement: HTMLElement) => {
           // ✅ FIXED pendant qu'on scrolle dans le container
           gsap.set(textElement, {
             position: 'fixed',
-            bottom: (viewportHeight*0.6) + 'px',
+            bottom: (viewportHeight*(props.links? 0.6 : 0.5)) + 'px',
           });
         } else {
           // ✅ ABSOLUTE une fois qu'on atteint le bas du container

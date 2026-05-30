@@ -151,6 +151,7 @@ onBeforeUnmount(() => {
 }
 
 .overlay-image {
+  border-radius: 5px;
   max-width: 50%;
   max-height: 85%;
   object-fit: contain;
