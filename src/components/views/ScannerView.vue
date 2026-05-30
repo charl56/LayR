@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useNavigationStore } from '@/composables/useNavigationStore';
 import { useRouter } from 'vue-router';
 
@@ -23,8 +23,8 @@ const initCamera = async () => {
     const constraints: MediaStreamConstraints = {
       video: {
         facingMode: facingModeValue,
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       },
       audio: false // On bloque le micro, inutile pour scanner
     };
@@ -35,9 +35,16 @@ const initCamera = async () => {
     streamRef.value = stream;
     hasAccess.value = true;
 
+    await nextTick();
+
     // Injecte le flux vidéo dans notre balise HTML <video>
     if (videoRef.value) {
       videoRef.value.srcObject = stream;
+
+      // 💡 SÉCURITÉ MOBILE : Force le lancement de la vidéo au cas où le autoplay soit bloqué
+      videoRef.value.play().catch(playErr => {
+        console.warn("Le autoplay a été bloqué par le navigateur, tentative de relance...", playErr);
+      });
     }
   } catch (err: any) {
     hasAccess.value = false;
@@ -94,7 +101,8 @@ onBeforeUnmount(() => {
         ref="videoRef" 
         autoplay 
         playsinline 
-        muted 
+        muted
+        controls="false" 
         @loadedmetadata="startImageAnalysis"
         class="video-feed"
       ></video>
@@ -118,7 +126,7 @@ onBeforeUnmount(() => {
   width: 100vw;
   height: 100vh;
   background-color: #0c0c0c;
-  z-index: 1000;
+  z-index: 99;
   overflow: hidden;
   font-family: sans-serif;
 }
@@ -201,8 +209,8 @@ onBeforeUnmount(() => {
   left: 5%;
   width: 90%;
   height: 2px;
-  background-color: var(--layr-color-1, #00ffcc); /* Utilise ta couleur ou du turquoise */
-  box-shadow: 0 0 8px var(--layr-color-1, #00ffcc);
+  background-color: var(--layr-color-1);
+  box-shadow: 0 0 8px var(--layr-color-1);
   animation: scanMove 2.5s infinite ease-in-out;
 }
 

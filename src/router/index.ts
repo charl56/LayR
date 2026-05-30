@@ -20,7 +20,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  // 💡 Bonus GSAP : Remet le scroll tout en haut à chaque changement de page
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {

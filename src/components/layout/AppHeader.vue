@@ -57,7 +57,7 @@ onUnmounted(() => {
             <a @click.stop="onHomeEvent('about')"><h2>QUI SOMMES-NOUS</h2></a>
           </li>
           <li v-else class="nav-item">
-            <a @click.stop="onHomeEvent('gallery')"><h2>GALLERIE</h2></a>
+            <a @click.stop="onHomeEvent('galery')"><h2>GALLERIE</h2></a>
           </li>
 
           <li class="nav-item">
