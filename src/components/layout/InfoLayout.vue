@@ -47,6 +47,7 @@ const initAnimations = async () => {
         end: "+=50%", // ⬅️ Ajuste cette valeur pour scroller plus ou moins longtemps (+=100%, etc.)
         scrub: 1,
         pin: true, 
+        pinSpacing: true, // 📌 Indique à GSAP de pousser proprement le composant du dessous (Collection)
         invalidateOnRefresh: true,
       }
     });

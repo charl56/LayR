@@ -47,7 +47,6 @@ const handleArtistClick = (artist: Artist) => {
 
 <style scoped>
 .artist-list {
-  margin-top: 50svh;
   width: 100%;
   overflow: hidden;
   /* Évite les débordements */

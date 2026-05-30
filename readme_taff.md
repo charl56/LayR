@@ -32,7 +32,3 @@ ContactIcons (liens réseaux)
   Logo scanner
 
 
-
-### 2eme partie 
-
-- image plus smooth : en mode descente de montagne russe, ça monte raide et redescent en lenteur, parabole arondie 

@@ -40,7 +40,6 @@ const toggleList = () => {
 .about {
   width: 100%;
   overflow: hidden;
-  margin-top: 50svh;
 }
 
 .about-header {

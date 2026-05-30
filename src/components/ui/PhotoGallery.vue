@@ -113,7 +113,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .photo-galery {
-  margin-top: 50svh;
   width: 100%;
   min-height: 100svh;
   text-align: center;
