@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/composables/useNavigationStore';
 
 const { 
   currentPage, 
+  resetToHome,
 } = useNavigationStore();
 
 const menuOpen = ref(false);
@@ -14,6 +15,8 @@ const router = useRouter();
 
 const onHomeEvent = (path?: string) => {
   menuOpen.value = false;
+  if(path === undefined) resetToHome();
+  // currentPage.value = 'home';
   router.push(`/${path ? `#${path}` : ''}`);
 };
 
@@ -47,7 +50,7 @@ onUnmounted(() => {
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
         <ul class="nav-list">
           <li class="nav-item">
-            <a  @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
+            <a @click.stop="onHomeEvent(' ')"><h2>ACCUEIL</h2></a>
           </li>
           <li class="nav-item">
             <a @click.stop="onHomeEvent('collection')"><h2>COLLECTIONS</h2></a>

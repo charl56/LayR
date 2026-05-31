@@ -9,7 +9,7 @@ import Contact from '@/components/layout/Contact.vue';
 
 // --- Imports : Données et Types
 import { useNavigationStore } from '@/composables/useNavigationStore';
-
+import { onMounted } from 'vue';
 // --- State
 const { 
   currentPage, 
@@ -17,6 +17,7 @@ const {
   currentData, 
   goToCollection 
 } = useNavigationStore();
+
 
 </script>
 
@@ -27,7 +28,7 @@ const {
     <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
     <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
         :isCollectionOpen="isCollectionOpen" />
-
+    {{ currentPage }}
     <PhotoGallery v-if="currentPage == 'collection'" :currentData="currentData" />
     <WhoAreWe v-else />
 
