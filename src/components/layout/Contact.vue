@@ -12,12 +12,12 @@
             <a class="icon-contact" aria-label="Toggle menu" href="https://www.x.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/x.webp"/>
-            </a>
+            </a> -->
             <a class="icon-contact" aria-label="Toggle menu" href="https://www.instagram.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/insta.webp"/>
             </a>
-            <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
+         <!--   <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
             </a> -->

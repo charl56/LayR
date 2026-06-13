@@ -86,22 +86,17 @@ const startImageAnalysis = () => {
 // --- Gestion du résultat
 const onScanSuccess = (lien: string) => {
   isDetecting.value = false; // Stop la boucle de scan
-
-  // Extrait l'id du projet depuis l'URL : https://layr.ostudio426.com/scanner/kelaggs_nvlvie
-  const projectId = lien.split('/').pop();
+  console.log("scan")
+  // Extrait l'id du projet depuis l'URL : https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie
+  const projectId = lien.split('video=').pop();
   console.log(projectId)
   if (!projectId) return;
 
   // Recherche le projet dans les données ARTISTS
   let videoUrl: string | undefined;
 
-  for (const artist of ARTISTS) {
-    const project = artist.projets.find(p => p.videoId === projectId);
-    if (project?.video) {
-      videoUrl = project.video;
-      break;
-    }
-  }
+  videoUrl = getVideoUrl(projectId)
+  console.log(videoUrl)
 
   if (!videoUrl) {
     console.warn('Projet introuvable pour id :', projectId);
@@ -114,7 +109,9 @@ const onScanSuccess = (lien: string) => {
   router.replace({ query: { video: projectId } });
 
   // Lance la vidéo
-  activeVideoUrl.value = videoUrl;
+  activeVideoUrl.value = getAssetSrc(videoUrl);
+
+  
 };
 
 // --- Ferme la vidéo
@@ -125,7 +122,7 @@ const closeVideo = () => {
   startImageAnalysis(); // Reprend le scan
 };
 
-onScanSuccess("https://layr.ostudio426.com/scanner/kelaggs_nvlvie");
+onScanSuccess("https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie");
 
 
 // --- Cycle de vie
@@ -136,17 +133,32 @@ onMounted(() => {
   // Vérifie si une vidéo est demandée dans l'URL (arrivée depuis app externe)
   const videoId = router.currentRoute.value.query.video as string | undefined;
   if (videoId) {
-    for (const artist of ARTISTS) {
-      const project = artist.projets.find(p => p.videoId === videoId);
-      if (project?.video) {
-        console.log('Vidéo demandée dans l\'URL :', project?.video);
-        activeVideoUrl.value = getAssetSrc(project.video);
-        break;
-      }
+    let videoUrl = getVideoUrl(videoId);
+    
+    if (!videoUrl) {
+      console.warn('Projet introuvable pour id :', videoId);
+      isDetecting.value = true; // Reprend le scan si rien trouvé
+      requestAnimationFrame(() => startImageAnalysis());
+      return;
     }
+    
+    activeVideoUrl.value = videoUrl;
   }
 
 });
+
+
+
+function getVideoUrl(videoId: string): string {
+  for (const artist of ARTISTS) {
+    const project = artist.projets.find(p => p.videoId === videoId);
+    if (project?.video) {
+      console.log('Vidéo demandée dans l\'URL :', project?.video);
+      return getAssetSrc(project.video);
+    }
+  }
+  return '';
+}
 
 onBeforeUnmount(() => {
   controllerRef.value?.stopProcessVideo();
@@ -176,16 +188,14 @@ onBeforeUnmount(() => {
         <div class="scan-frame">
           <div class="scan-laser"></div>
         </div>
-        <p class="scan-instructions">Cadrez l'affiche à l'intérieur du rectangle</p>
+        <p class="scan-instructions">Scanner le QR code </p>
       </div>
     </div>
-
 
     <!-- Overlay vidéo -->
     <Transition name="fade">
       <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
-        <button class="btn-close" @click="closeVideo">✕</button>
-        <video class="project-video" :src="activeVideoUrl" autoplay controls playsinline />
+        <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline />
       </div>
     </Transition>
 
@@ -330,5 +340,56 @@ onBeforeUnmount(() => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.video-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-video {
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  border-radius: 12px;
+  outline: none;
+}
+
+.btn-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Transition --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
