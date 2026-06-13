@@ -15,6 +15,10 @@ const streamRef = ref<MediaStream | null>(null);
 const hasAccess = ref<boolean | null>(null); // null = en attente, true = OK, false = refusé
 const errorMessage = ref<string>('');
 const controllerRef = ref<any>(null);
+const activeVideoUrl = ref<string | null>(null); // URL de la vidéo à afficher
+const isDetecting = ref(true); // Pour stopper la boucle après détection
+
+
 // --- Configuration et Accès Caméra
 const initCamera = async () => {
   try {
@@ -23,17 +27,10 @@ const initCamera = async () => {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const facingModeValue = isMobile ? 'environment' : 'user';
 
-    const constraints: MediaStreamConstraints = {
-      video: {
-        facingMode: facingModeValue,
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      },
-      audio: false // On bloque le micro, inutile pour scanner
-    };
-
-    // Demande d'autorisation au navigateur
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingModeValue, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
 
     streamRef.value = stream;
     hasAccess.value = true;
@@ -56,17 +53,16 @@ const initCamera = async () => {
   }
 };
 
-// --- Emplacement pour ta future logique d'analyse
-// Cette fonction pourra être appelée en boucle (avec un requestAnimationFrame ou setInterval)
-// pour analyser le flux vidéo image par image (ex: avec Tesseract.js, OpenCV, etc.)
+// --- Scan QR Code
 const startImageAnalysis = () => {
   if (!videoRef.value) return;
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
+  isDetecting.value = true;
 
   const detectLoop = () => {
-    if (!videoRef.value || !streamRef.value) return;
+    if (!videoRef.value || !streamRef.value || !isDetecting.value) return;
 
     canvas.width = videoRef.value.videoWidth;
     canvas.height = videoRef.value.videoHeight;
@@ -74,9 +70,7 @@ const startImageAnalysis = () => {
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height);
-    console.log(code)
     if (code) {
-      console.log('✅ QR Code détecté :', code.data);
       onScanSuccess(code.data);
       return; // Stop la boucle
     }
@@ -88,25 +82,69 @@ const startImageAnalysis = () => {
 };
 
 
+
+// --- Gestion du résultat
 const onScanSuccess = (lien: string) => {
-  console.log("Affiche scannée avec succès ! ID de l'artiste :", lien);
+  isDetecting.value = false; // Stop la boucle de scan
 
-  // TODO
-  // Exemple de lien scanné https://layr.ostudio426.com/scanner/kelaggs_nvlvie
+  // Extrait l'id du projet depuis l'URL : https://layr.ostudio426.com/scanner/kelaggs_nvlvie
+  const projectId = lien.split('/').pop();
+  console.log(projectId)
+  if (!projectId) return;
 
-  // On récupère l'id du projet (après /scanner/), on le recherche dans nos données dans ARTIST, et on ajoute le lien dans l'url (si paq déjà, mais quand on scan il n'y sera pas normalement).
-  // La video se lance, en presque plein ecran, genre 80% peut être, dans un nouveau div
-    // On peut fermer la video avec un bouton X, ou en cliquant sur le fond noir, ce qui enlève l'id de l'url
+  // Recherche le projet dans les données ARTISTS
+  let videoUrl: string | undefined;
 
+  for (const artist of ARTISTS) {
+    const project = artist.projets.find(p => p.videoId === projectId);
+    if (project?.video) {
+      videoUrl = project.video;
+      break;
+    }
+  }
 
+  if (!videoUrl) {
+    console.warn('Projet introuvable pour id :', projectId);
+    isDetecting.value = true; // Reprend le scan si rien trouvé
+    requestAnimationFrame(() => startImageAnalysis());
+    return;
+  }
+
+  // Ajoute l'id dans l'URL sans recharger la page
+  router.replace({ query: { video: projectId } });
+
+  // Lance la vidéo
+  activeVideoUrl.value = videoUrl;
 };
+
+// --- Ferme la vidéo
+const closeVideo = () => {
+  activeVideoUrl.value = null;
+  router.replace({ query: {} }); // Retire le param de l'URL
+  isDetecting.value = true;
+  startImageAnalysis(); // Reprend le scan
+};
+
+onScanSuccess("https://layr.ostudio426.com/scanner/kelaggs_nvlvie");
+
 
 // --- Cycle de vie
 onMounted(() => {
   initCamera();
-  // TODO
-  // Ici on check l'url pour voir si une video est demandée (arrivé depuis app externe)
-  // Si oui, on lance la video directement, sinon on attend le scan
+
+
+  // Vérifie si une vidéo est demandée dans l'URL (arrivée depuis app externe)
+  const videoId = router.currentRoute.value.query.video as string | undefined;
+  if (videoId) {
+    for (const artist of ARTISTS) {
+      const project = artist.projets.find(p => p.videoId === videoId);
+      if (project?.video) {
+        console.log('Vidéo demandée dans l\'URL :', project?.video);
+        activeVideoUrl.value = getAssetSrc(project.video);
+        break;
+      }
+    }
+  }
 
 });
 
@@ -141,6 +179,15 @@ onBeforeUnmount(() => {
         <p class="scan-instructions">Cadrez l'affiche à l'intérieur du rectangle</p>
       </div>
     </div>
+
+
+    <!-- Overlay vidéo -->
+    <Transition name="fade">
+      <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
+        <button class="btn-close" @click="closeVideo">✕</button>
+        <video class="project-video" :src="activeVideoUrl" autoplay controls playsinline />
+      </div>
+    </Transition>
 
   </div>
 </template>
