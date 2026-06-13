@@ -27,9 +27,10 @@ export interface ScannedPhoto {
 }
 
 export interface Links {
-  soundcloud?: string;
+  apple?: string;
   spotify?: string;
   deezer?: string;
+  soundcloud?: string;
 }
 
 export type Page = 'home' | 'collection' | 'scanner';

@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
 }
 
 .artist-list-content {
-  background-color: #f0f0f0;
+  background-color: var(--layr-color-grey-1);
   padding: 0.5rem 0;
 }
 

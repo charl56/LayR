@@ -16,8 +16,8 @@ export const ARTISTS: Artist[] = [
     {
         id: 'kelaggs',
         name: 'Kelaggs',
-        shortBio1: 'Kelaggs est un beatmaker indépendant qui fusionne l\'univers internet, expériences électroniques et influences hyperpop actuelles.',
-        shortBio2: 'Son style mêle culture internet, expériences électroniques et influences hyperpop actuelles. Entièrement auto-produit, il mélange esthétique pop 2010.',
+        shortBio1: 'Kelaggs est un beatmaker, auteur et producteur indépendant qui développe seul son univers depuis maintenant 8 ans.',
+        shortBio2: 'Son style mêle culture internet, expérimentations électroniques et influences hyperpop',
         image1: 'artists/kelaggs/kelaggs1.jpg',
         image2: 'artists/kelaggs/kelaggs2.jpg',
         projets: [
@@ -26,9 +26,11 @@ export const ARTISTS: Artist[] = [
             { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' },
             { name: 'Nvl vie/Need4Speed', img: 'kelaggs/nouvellevie.webp', videoId:'kelaggs_nvlvie', video: 'artists/kelaggs/kelaggs_nvlvie.mp4' }
         ],        
-        description: 'Kelaggs redonne à la rue son pouvoir d\'expression, en transformant chaque affiche en expérience à vivre et à garder.',
+        description: 'Ce projet de 11 titres poursuit l’évolution de Kelaggs vers une musique plus électronique, influencée par la dubstep de Skrillex, l’ambient et la vague hyperpop actuelle. Entièrement auto-produit, il mélange sonorités électroniques, textures immersives et esthétique pop 2010.',
         links: {
+            apple: 'https://music.apple.com/us/artist/kelaggs/1548345854',
             spotify: 'https://spotify.com/kelaggs',
+            deezer: 'https://www.deezer.com/fr/artist/115884062',
             soundcloud: 'https://soundcloud.com/kelaggs'
         }
     },

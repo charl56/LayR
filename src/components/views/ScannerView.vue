@@ -7,8 +7,9 @@ import getAssetSrc from '@/utils/imageUtils';
 import jsQR from 'jsqr';
 
 
-const router = useRouter();
 
+const router = useRouter();
+const { addProjectToCollection } = useCollectionStore();
 // --- État Local
 const videoRef = ref<HTMLVideoElement | null>(null);
 const streamRef = ref<MediaStream | null>(null);
@@ -86,32 +87,37 @@ const startImageAnalysis = () => {
 // --- Gestion du résultat
 const onScanSuccess = (lien: string) => {
   isDetecting.value = false; // Stop la boucle de scan
-  console.log("scan")
+
   // Extrait l'id du projet depuis l'URL : https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie
-  const projectId = lien.split('video=').pop();
-  console.log(projectId)
-  if (!projectId) return;
+  const videoId = lien.split('video=').pop();
+
+  if (!videoId) return;
 
   // Recherche le projet dans les données ARTISTS
   let videoUrl: string | undefined;
 
-  videoUrl = getVideoUrl(projectId)
-  console.log(videoUrl)
+  videoUrl = getVideoUrl(videoId)
 
   if (!videoUrl) {
-    console.warn('Projet introuvable pour id :', projectId);
+    console.warn('Projet introuvable pour id :', videoId);
     isDetecting.value = true; // Reprend le scan si rien trouvé
     requestAnimationFrame(() => startImageAnalysis());
     return;
   }
 
   // Ajoute l'id dans l'URL sans recharger la page
-  router.replace({ query: { video: projectId } });
+  router.replace({ query: { video: videoId } });
 
   // Lance la vidéo
-  activeVideoUrl.value = getAssetSrc(videoUrl);
+  activeVideoUrl.value = videoUrl;
 
-  
+  // Sauvegarde du projet
+  for (const artist of ARTISTS) {
+    if (artist.projets.find(p => p.videoId === videoId)) {
+      addProjectToCollection(artist.name, videoId);
+      break;
+    }
+  }
 };
 
 // --- Ferme la vidéo
@@ -129,19 +135,17 @@ const closeVideo = () => {
 onMounted(() => {
   initCamera();
 
-
   // Vérifie si une vidéo est demandée dans l'URL (arrivée depuis app externe)
   const videoId = router.currentRoute.value.query.video as string | undefined;
   if (videoId) {
     let videoUrl = getVideoUrl(videoId);
-    
+
     if (!videoUrl) {
       console.warn('Projet introuvable pour id :', videoId);
       isDetecting.value = true; // Reprend le scan si rien trouvé
       requestAnimationFrame(() => startImageAnalysis());
       return;
     }
-    
     activeVideoUrl.value = videoUrl;
   }
 
@@ -153,7 +157,6 @@ function getVideoUrl(videoId: string): string {
   for (const artist of ARTISTS) {
     const project = artist.projets.find(p => p.videoId === videoId);
     if (project?.video) {
-      console.log('Vidéo demandée dans l\'URL :', project?.video);
       return getAssetSrc(project.video);
     }
   }
@@ -192,12 +195,16 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- Overlay vidéo -->
-    <Transition name="fade">
-      <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
-        <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline />
-      </div>
-    </Transition>
+
+    <p class="btn-voir-gallerie">voir galerie
+    </p>
+
+      <!-- Overlay vidéo -->
+      <Transition name="fade">
+        <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
+          <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline />
+        </div>
+      </Transition>
 
   </div>
 </template>
@@ -391,5 +398,16 @@ onBeforeUnmount(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+
+.btn-voir-gallerie {
+  position: absolute;
+  bottom: 10vh;
+  color: white;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  text-decoration: underline;
 }
 </style>

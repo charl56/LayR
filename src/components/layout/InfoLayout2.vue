@@ -8,7 +8,7 @@ import { useNavigationStore } from '@/composables/useNavigationStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const { currentPage } = useNavigationStore(); 
+const { currentPage } = useNavigationStore();
 const props = defineProps<{
   text1: string,
   imageUrl: string,
@@ -64,17 +64,18 @@ const initAnimations = async () => {
     }
 
     // 2. Animation des icônes de musique avec un .to()
-    const icons = containerRef.value?.querySelectorAll('.icon-music');
-    if (icons && icons.length > 0) {
+    const icons = containerRef.value?.querySelector('.icons-music__div');
+    console.log('Icons found:', icons); // Debug: Vérifie si les icônes sont trouvées
+    if (icons) {
       tl.to(icons, {
         opacity: 1,          // Deviennent visibles
         y: 0,                // Reviennent à leur position d'origine (0)
         scale: 1,            // Reprennent leur taille normale (1)
         rotation: 0,         // Redeviennent droites (0)
-        duration: 0.6,        
-        stagger: 0.15,        
-        ease: "back.out(1.7)" 
-      }, 1);            
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "back.out(1.7)"
+      }, 1);
     }
 
   }, containerRef.value);
@@ -116,14 +117,22 @@ onMounted(() => {
       </div>
 
       <div v-if="links" class="icons-music__div">
-        <a v-if="links.soundcloud" class="icon-music" aria-label="Soundcloud" :href="links.soundcloud" target="_blank" rel="noopener noreferrer">
-          <img alt="Soundcloud" class="logo" src="@/assets/youtube.webp" />
+
+        <a v-if="links.apple" class="icon-music" aria-label="Apple Music" :href="links.apple" target="_blank"
+          rel="noopener noreferrer">
+          <img alt="Apple Music" class="logo" src="@/assets/apple.webp" />
         </a>
-        <a v-if="links.spotify" class="icon-music" aria-label="Spotify" :href="links.spotify" target="_blank" rel="noopener noreferrer">
-          <img alt="Spotify" class="logo" src="@/assets/youtube.webp" />
+        <a v-if="links.spotify" class="icon-music" aria-label="Spotify" :href="links.spotify" target="_blank"
+          rel="noopener noreferrer">
+          <img alt="Spotify" class="logo" src="@/assets/spotify.webp" />
         </a>
-        <a v-if="links.deezer" class="icon-music" aria-label="Deezer" :href="links.deezer" target="_blank" rel="noopener noreferrer">
-          <img alt="Deezer" class="logo" src="@/assets/youtube.webp" />
+        <a v-if="links.deezer" class="icon-music" aria-label="Deezer" :href="links.deezer" target="_blank"
+          rel="noopener noreferrer">
+          <img alt="Deezer" class="logo" src="@/assets/deezer.webp" />
+        </a>
+        <a v-if="links.soundcloud" class="icon-music" aria-label="Soundcloud" :href="links.soundcloud" target="_blank"
+          rel="noopener noreferrer">
+          <img alt="Soundcloud" class="logo" src="@/assets/soundcloud.webp" />
         </a>
       </div>
     </div>
@@ -190,6 +199,14 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+
+  
+  padding: 4px;
+  border-radius: 50px;
+  background-color: var(--layr-pink-1);
+
+    opacity: 0;
+  transform: translateY(60px) scale(0.3) rotate(-15deg);
 }
 
 .icon-music {
@@ -197,12 +214,11 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   will-change: transform, opacity;
-  
-  opacity: 0;
-  transform: translateY(60px) scale(0.3) rotate(-15deg);
+
+
 }
 
-.icon-music:active {
+.icons-music__div {
   transform: scale(0.95);
   transition: transform 0.1s ease;
 }
@@ -220,5 +236,4 @@ onMounted(() => {
 .text-color-red {
   color: var(--layr-pink-1);
 }
-
 </style>

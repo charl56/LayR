@@ -21,7 +21,7 @@
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
             </a> -->
-            <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
+            <a class="icon-contact" aria-label="Toggle menu" href="mailto:contact@layr.ostudio426.com" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/mail.webp"/>
             </a>
