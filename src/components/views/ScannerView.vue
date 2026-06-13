@@ -5,11 +5,12 @@ import { useCollectionStore } from '@/composables/useCollectionStore';
 import { useRouter } from 'vue-router';
 import getAssetSrc from '@/utils/imageUtils';
 import jsQR from 'jsqr';
-
+import { useNavigationStore } from '@/composables/useNavigationStore';
 
 
 const router = useRouter();
 const { addProjectToCollection } = useCollectionStore();
+const { currentArtistId, currentPage } = useNavigationStore();
 // --- État Local
 const videoRef = ref<HTMLVideoElement | null>(null);
 const streamRef = ref<MediaStream | null>(null);
@@ -115,6 +116,9 @@ const onScanSuccess = (lien: string) => {
   for (const artist of ARTISTS) {
     if (artist.projets.find(p => p.videoId === videoId)) {
       addProjectToCollection(artist.name, videoId);
+      currentArtistId.value = artist.id;
+      currentPage.value = 'collection';
+
       break;
     }
   }
@@ -196,9 +200,8 @@ onBeforeUnmount(() => {
     </div>
 
 
-    <p class="btn-voir-gallerie">voir galerie
-    </p>
-
+    
+      <a v-if="currentArtistId" @click.stop=""><h3 class="btn-voir-gallerie">Voir galerie</h3></a>
       <!-- Overlay vidéo -->
       <Transition name="fade">
         <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
@@ -219,7 +222,6 @@ onBeforeUnmount(() => {
   background-color: #0c0c0c;
   z-index: 99;
   overflow: hidden;
-  font-family: sans-serif;
 }
 
 /* --- Messages de chargement et d'erreur --- */
