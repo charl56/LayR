@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import getAssetSrc from '@/utils/imageUtils';
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useNavigationStore } from '@/composables/useNavigationStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const { currentPage } = useNavigationStore();
 const props = defineProps<{
   text1: string,
   text2: string,
@@ -28,26 +30,30 @@ const prepareText = (textElement: HTMLElement, textContent: string) => {
 const initAnimations = async () => {
   if (!containerRef.value) return;
 
-  if (ctx.value) ctx.value.revert();
+  // ⚠️ CRUCIAL : On détruit proprement l'ancienne timeline et ses ScrollTriggers 
+  // avant de reconstruire pour éviter les fuites de mémoire et les conflits
+  if (ctx.value) {
+    ctx.value.revert();
+    ctx.value = null;
+  }
 
+  // Attend que Vue applique les nouveaux textes bruts dans le DOM
   await nextTick();
 
+  // On injecte à nouveau les spans avec le nouveau contenu des props
   if (text1Ref.value) prepareText(text1Ref.value, props.text1);
   if (text2Ref.value) prepareText(text2Ref.value, props.text2);
 
   ctx.value = gsap.context(() => {
     
-    // 💡 La magie est ici : on pin le container complet.
-    // L'écran va se figer pendant un scroll équivalent à "+=50%" de la hauteur de l'écran.
-    // Cela simule parfaitement tes 150svh (100vh de base + 50% de scroll figé).
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.value,
         start: "top top",
-        end: "+=50%", // ⬅️ Ajuste cette valeur pour scroller plus ou moins longtemps (+=100%, etc.)
+        end: "+=50%", 
         scrub: 1,
         pin: true, 
-        pinSpacing: true, // 📌 Indique à GSAP de pousser proprement le composant du dessous (Collection)
+        pinSpacing: true, 
         invalidateOnRefresh: true,
       }
     });
@@ -67,11 +73,23 @@ const initAnimations = async () => {
         opacity: 1,
         duration: 0.5,
         stagger: 0.1
-      }, 0.3); // Démarre pendant que le premier finit
+      }, 0.3);
     }
 
   }, containerRef.value);
+
+  // 🔄 Force ScrollTrigger à recalculer toutes les positions de la page
+  ScrollTrigger.refresh();
 };
+
+// 🎯 SURVEILLANCE : Si les textes ou l'image changent, on relance tout !
+watch(
+  () => [props.text1, props.text2, props.imageUrl], 
+  async () => {
+    await initAnimations();
+  }, 
+  { deep: true }
+);
 
 onMounted(() => {
   initAnimations();
@@ -96,12 +114,12 @@ onMounted(() => {
 <template>
   <div ref="containerRef" class="info-layout" id="home">
     <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
-
-    <div ref="text1Ref" class="two-text first">
+    {{ currentPage }}
+    <div ref="text1Ref" class="two-text first" :class="currentPage === 'home' ? 'text-color-white' : 'text-color-red'">
       <p>{{ text1 }}</p>
     </div>
 
-    <div ref="text2Ref" class="two-text second">
+    <div ref="text2Ref" class="two-text second" :class="currentPage === 'home' ? 'text-color-white' : 'text-color-red'">
       <p>{{ text2 }}</p>
     </div>
   </div>
@@ -121,7 +139,7 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  position: absolute;
+  position: absolute; /* ⬅️ Pense à remettre l'image en absolute pour que le texte se pose dessus ! */
   top: 0;
   left: 0;
   z-index: 1;
@@ -129,11 +147,17 @@ onMounted(() => {
 
 .two-text {
   width: 80%;
-  color: #fff;
-  mix-blend-mode: difference;
   position: absolute;
   z-index: 2;
   will-change: transform, opacity;
+}
+
+.text-color-white {
+  color: #fff;
+}
+
+.text-color-red {
+  color: var(--layr-red-1);
 }
 
 .two-text p {
@@ -141,12 +165,12 @@ onMounted(() => {
 }
 
 .first {
-  top: 15vh; /* Reste calé proprement en haut, sans sauter avec la barre mobile */
+  top: 15vh;
   left: 1rem;
 }
 
 .second {
-  bottom: 15vh; /* Reste calé proprement en bas, sans sauter avec la barre mobile */
+  bottom: 15vh;
   right: 1rem;
   text-align: end;
 }

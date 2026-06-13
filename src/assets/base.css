@@ -2,6 +2,8 @@
 :root {
   --layr-yellow-1: #FBD239;
   --layr-yellow-2: #E4F500;
+
+  --layr-red-1: #d20701;
   
   --layr-color-1: var(--layr-yellow-1);
   

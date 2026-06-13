@@ -4,12 +4,11 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { ARTISTS } from '@/data/artists';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useNavigationStore } from '@/composables/useNavigationStore';
+
 
 gsap.registerPlugin(ScrollTrigger);
-
-const props = defineProps<{
-  onCollectionButton: (id: string) => void;
-}>();
+const { currentArtistId, goToCollection } = useNavigationStore();
 
 const emit = defineEmits<{
   'update:isOpen': [value: boolean]
@@ -29,7 +28,8 @@ const toggleList = () => {
 
 // Fonction pour gérer le clic sur un artiste
 const handleArtistClick = (artist: Artist) => {
-  props.onCollectionButton(artist.id);
+  currentArtistId.value = artist.id;
+  goToCollection(artist.id);
   isOpen.value = false;
   emit('update:isOpen', false); // Émet false pour fermer proprement partout
 };

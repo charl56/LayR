@@ -20,24 +20,28 @@ const initScannerAnimation = async () => {
 
   ctx.value = gsap.context(() => {
     
+    // 💡 Calcul dynamique des positions pour éviter d'utiliser "left"
+    const targetX = 49 - (window.innerWidth / 2);
+    
+    // On calcule l'écart pour le caler à 1.5rem (24px) du bas au lieu de 5rem
+    // 5rem = 80px, 1.5rem = 24px -> Différence de 56px vers le bas
+    const targetY = 56; 
+
     gsap.to(buttonRef.value, {
       scrollTrigger: {
-        trigger: document.body, // Se base sur le scroll de toute la page
-        start: "top top",       // Dès qu'on quitte le pixel 0 du haut
-        end: "top -100px",      // L'animation se termine après 100px de scroll réel
-        scrub: 0.5,             // Transition très fluide au scroll
+        trigger: document.body,
+        start: "top top",      
+        end: "top -100px",      
+        scrub: 0.5,             
       },
-      width: '50px',            // Devient un carré de la hauteur du bouton (ou adapte à 40px/50px)
-      height: '50px',           // On le passe à 50px pour qu'il soit bien proportionné pour un logo
-      
-      left: '1.5rem',
-      xPercent: 0,              // Annule le centrage initial (translate-x -50%)
-      bottom: '1.5rem',         // Ajustement de sa distance du bas sur mobile
-      
+      width: '50px',            
+      height: '50px',           
+      // 💡 On utilise x et y à la place de left/bottom. C'est ultra fluide et safe !
+      x: targetX,
+      y: targetY,
       boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
     });
 
-    // Animation synchronisée pour masquer le texte et afficher le logo
     const text = buttonRef.value?.querySelector('.btn-text');
     const icon = buttonRef.value?.querySelector('.btn-icon');
 
@@ -46,13 +50,15 @@ const initScannerAnimation = async () => {
         scrollTrigger: {
           trigger: document.body,
           start: "top top",
-          end: "top -50px", // Plus rapide que le bouton pour éviter les chevauchements
+          end: "top -50px", 
           scrub: 0.5,
         }
       });
 
-      tl.to(text, { opacity: 0, display: 'none' }, 0)
-        .to(icon, { opacity: 1, display: 'flex' }, 0.2);
+      // 💡 On utilise "autoAlpha" (mélange de opacity et visibility: hidden) 
+      // à la place de display: none pour éviter le bug de layout mobile
+      tl.to(text, { autoAlpha: 0 }, 0)
+        .to(icon, { autoAlpha: 1 }, 0.2);
     }
 
   }, buttonRef.value);
@@ -61,7 +67,6 @@ const initScannerAnimation = async () => {
 const goToScanner = () => {
   router.push('/scanner');
 };
-
 
 onMounted(() => {
   initScannerAnimation();
@@ -93,22 +98,21 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
-
-
-
 .scanner-btn {
   position: fixed;
-  z-index: 999; /* Toujours au-dessus de tout le reste du site */
+  z-index: 999;
   cursor: pointer;
   
   height: 50px;
   width: 50%;
   
-  bottom: 5rem; /* Aligné sur la même ligne que tes textes du premier layout */
+  bottom: 5rem; 
   left: 50%;
+  /* 💡 Le bouton est centré uniquement via le CSS initial */
   transform: translateX(-50%);
-  will-change: transform, width, height, left, border-radius;
+  
+  /* Retrait de left, bottom et width de will-change car GSAP s'occupe de la transform (x, y) */
+  will-change: transform;
 
   background-color: white;
   border: none;
@@ -122,28 +126,31 @@ onMounted(() => {
   align-items: center;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  cursor: pointer;
 }
 
-h2{
-    text-shadow: 0px 6px 8px rgb(0 0 0 / 65%);
-    pointer-events: none;
+h2 {
+  text-shadow: 0px 6px 8px rgb(0 0 0 / 65%);
+  pointer-events: none;
+  margin: 0;
 }
 
 .btn-text {
   display: block;
-  opacity: 1;
   white-space: nowrap;
 }
 
 .btn-icon {
-  display: none;
-  opacity: 0;
+  /* 💡 On met position absolute pour que l'icône soit déjà centrée dans le bouton */
+  position: absolute;
+  display: flex;
   justify-content: center;
   align-items: center;
+  visibility: hidden; /* Géré par autoAlpha */
+  opacity: 0;
 }
 
+/* 💡 Version corrigée du active sans casser les positions de GSAP */
 .scanner-btn:active {
-  transform: scale(0.95) translateX(-50%);
+  opacity: 0.8;
 }
 </style>

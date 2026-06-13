@@ -24,7 +24,7 @@ const {
 <template>
     <BtnScanner />
 
-    <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" />
+    <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" :current-page="currentPage"/>
     <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
     <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
         :isCollectionOpen="isCollectionOpen" />

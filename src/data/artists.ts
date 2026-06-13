@@ -5,8 +5,8 @@ export const ACCUEIL: Info = {
     name: 'Accueil',
     shortBio1: 'LayR transforme chacunes de vos affiches en expérience immersive tout en donnant vie à votre univers dans l’espace urbain',
     shortBio2: 'Chaque affiche que vous découvrez peut être scannée, vécue et conservée dans votre collection',
-    image1: 'accueil/accueil1.jpg',
-    image2: 'accueil/accueil2.png',
+    image1: 'accueil/chat_face.png',
+    image2: 'accueil/chat_dos.png',
     description: 'Nous vous écoutons, observons avec attention, et transformons l’authenticité en expériences visuelles qui marquent la rue',
 }
 
@@ -18,8 +18,8 @@ export const ARTISTS: Artist[] = [
         name: 'Kelaggs',
         shortBio1: 'Kelaggs est un beatmaker indépendant qui fusionne l\'univers internet, expériences électroniques et influences hyperpop actuelles.',
         shortBio2: 'Son style mêle culture internet, expériences électroniques et influences hyperpop actuelles. Entièrement auto-produit, il mélange esthétique pop 2010.',
-        image1: 'restinstar.png',
-        image2: 'stronboscoo.png',
+        image1: 'artists/kelaggs/kelaggs1.jpg',
+        image2: 'artists/kelaggs/kelaggs2.jpg',
         projets: [
             { name: 'RestInStarr', img: 'kelaggs/restinstarr.jpg' },
             { name: 'Bass Krush', img: 'kelaggs/basskrush.jpg' },
