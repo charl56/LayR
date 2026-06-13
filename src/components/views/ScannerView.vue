@@ -8,6 +8,23 @@ import getAssetSrc from '@/utils/imageUtils';
 
 
 
+// 🚀 SOLUTION : On va forcer manuellement l'initialisation du moteur graphique 
+// pour pallier l'absence des scripts d'installation automatique.
+import * as tf from '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs-backend-webgl';
+
+// Cette fonction asynchrone doit être appelée une fois au démarrage de ton application
+const initTensorFlow = async () => {
+  try {
+    console.log("⏳ Initialisation du moteur TensorFlow.js...");
+    await tf.setBackend('webgl');
+    await tf.ready();
+    console.log("🤖 [TensorFlow] Moteur WebGL activé avec succès !");
+  } catch (e) {
+    console.warn("⚠️ Impossible de forcer le WebGL, repli sur le moteur par défaut", e);
+  }
+};
+
 
 const router = useRouter();
 const { addProjectToCollection } = useCollectionStore();
@@ -17,7 +34,7 @@ const videoRef = ref<HTMLVideoElement | null>(null);
 const streamRef = ref<MediaStream | null>(null);
 const hasAccess = ref<boolean | null>(null); // null = en attente, true = OK, false = refusé
 const errorMessage = ref<string>('');
-
+const controllerRef = ref<any>(null);
 // --- Configuration et Accès Caméra
 const initCamera = async () => {
   try {
@@ -63,95 +80,58 @@ const initCamera = async () => {
 // Cette fonction pourra être appelée en boucle (avec un requestAnimationFrame ou setInterval)
 // pour analyser le flux vidéo image par image (ex: avec Tesseract.js, OpenCV, etc.)
 const startImageAnalysis = async () => {
-  if (!videoRef.value) {
-    console.error("❌ Erreur : L'élément HTML <video> n'est pas disponible.");
-    return;
-  }
+  if (!videoRef.value) return;
 
-  // 1. Vérification de la taille de la vidéo (Crucial pour MindAR)
-  console.log(`📹 Dimensions du flux vidéo reçues : ${videoRef.value.videoWidth}x${videoRef.value.videoHeight}`);
-  // 1. Initialise le contrôleur MindAR avec la dimension de ton flux
+  console.log(`📹 Dimensions vidéo : ${videoRef.value.videoWidth}x${videoRef.value.videoHeight}`);
+
   const controller = new Controller({
-    inputWidth: videoRef.value?.videoWidth || 1280,
-    inputHeight: videoRef.value?.videoHeight || 720,
-    maxTrack: 1 // On cherche une seule affiche à la fois
+    inputWidth: videoRef.value.videoWidth || 1280,
+    inputHeight: videoRef.value.videoHeight || 720,
+    maxTrack: 1,
+    warmupTolerance: 3,  // défaut probablement plus élevé
+    missTolerance: 3,
   });
 
+  controllerRef.value = controller;
 
+  // ✅ Pas de init() — n'existe pas
+  // ✅ Charge les targets directement
+  await controller.addImageTargets(
+    getAssetSrc('mind-targets/kelaggs_nvlvie.mind')
+  );
+  console.log('📦 Targets chargées');
 
-  console.log("⚙️ Compilations des matrices graphiques (controller.init)...");
-  if (typeof controller.init === 'function') {
-    await controller.init();
-  }
+  // ✅ Warmup GPU
+  await controller.dummyRun(videoRef.value);
+  console.log('✅ dummyRun terminé');
 
-  // 2. Charge ton fichier contenant les empreintes géométriques de tes affiches
-  // (généré à partir de tes images d'affiches dans l'outil mind-ar compiler)
-  console.log("⏳ Chargement du fichier de cibles (.mind)...");
-  console.log(getAssetSrc('mind-targets/kelaggs_nvlvie.mind'))
-  await controller.addImageTargets(getAssetSrc('mind-targets/kelaggs_nvlvie.mind'));
+  // ✅ Surcharge onUpdate — propriété native du controller
+  controller.onUpdate = (data: any) => {
+    console.log('🔄 onUpdate raw :', JSON.stringify(data)); // ← log brut
+    if (!data) return;
 
+    // On ignore les frames sans détection
+    if (data.type === 'processDone') return;
 
-  // 3. Associe le flux vidéo au moteur d'analyse
-  console.log("⏳ Initialisation du dummyRun (Warmup du moteur)...");
-  const warmup = await controller.dummyRun(videoRef.value);
-  // On inspecte ce que le moteur a compris de la vidéo
-  console.log("⚙️ Statut du moteur après dummyRun :", warmup);
+    if (data.type === 'updateMatrix') {
+      const { targetIndex, worldMatrix } = data;
 
-  let frameCount = 0;
-
-  // 4. Lance la boucle d'analyse en temps réel
-  const detectLoop = () => {
-    // 1. Sécurité : si l'utilisateur quitte la page ou coupe la caméra, on stoppe tout
-    if (!streamRef.value || !videoRef.value) return;
-
-    try {
-      frameCount++;
-      const results = controller.processVideo(videoRef.value);
-
-      // Log d'échantillonnage : On affiche un log toutes les 100 frames 
-      // pour éviter de saturer ta console, tout en vérifiant que ça tourne
-      if (frameCount % 100 === 0) {
-        console.log(`📸 Frame #${frameCount} analysée. Résultat brut du controller :`, results);
-      }
-
-      // 2. Si le moteur n'a rien renvoyé sur cette frame (results est undefined ou nul)
-      // On passe tranquillement à la frame suivante sans crasher !
-      if (!results) {
-        requestAnimationFrame(detectLoop);
-        return;
-      }
-
-      // 3. Gestion du format de MindAR : results peut être directement la prédiction, 
-      // ou un tableau contenant les prédictions de chaque affiche.
-      let prediction = null;
-      if (Array.isArray(results)) {
-        prediction = results[0]?.prediction; // Récupère la première affiche si c'est un tableau
+      if (worldMatrix !== null) {
+        // ✅ Cible trouvée et trackée
+        console.log('🎯 Cible détectée ! Index :', targetIndex);
+        controller.stopProcessVideo();
+        onScanSuccess(mapTargetIndexToVideo(targetIndex));
       } else {
-        prediction = results.prediction; // Récupère directement si c'est un objet
+        // Cible perdue
+        console.log('❌ Cible perdue, index :', targetIndex);
       }
-
-      // 4. Si une affiche commence à être analysée
-      if (prediction && prediction.score > 0.7) {
-        console.log("Affiche détectée ! Score de confiance :", prediction.score);
-        console.log("Index de l'affiche :", prediction.targetIndex);
-
-        const video = mapTargetIndexToVideo(prediction.targetIndex);
-        onScanSuccess(video);
-        return; // 🎯 SUCCÈS : On arrête définitivement la boucle
-      }
-
-    } catch (loopError) {
-      // Si une frame a un bug mineur, on l'attrape ici pour éviter de bloquer l'application
-      console.warn("Erreur mineure pendant l'analyse de la frame :", loopError);
     }
-
-    // 5. RECHARGE : Si on n'a rien trouvé à cette frame, on demande la frame suivante !
-    requestAnimationFrame(detectLoop);
   };
 
-  requestAnimationFrame(detectLoop);
+  // ✅ Lance la boucle interne
+  controller.processVideo(videoRef.value);
+  console.log('🚀 processVideo lancé');
 };
-
 
 const mapTargetIndexToVideo = (index: number): string => {
   // Exemple : si ton image 0 dans le fichier .mind est celle de l'artiste 1, etc.
@@ -174,22 +154,12 @@ const onScanSuccess = (video: string) => {
 
 // --- Cycle de vie
 onMounted(() => {
-  // Debug : inspecte ce que le CDN expose réellement
-  console.log('window.MINDAR :', (window as any).MINDAR);
-  console.log('window.MindAR :', (window as any).MindAR);
-  console.log('window keys with "mind" :',
-    Object.keys(window).filter(k => k.toLowerCase().includes('mind'))
-  );
-
   initCamera();
 });
 
 onBeforeUnmount(() => {
-  // ⚠️ CRUCIAL : On coupe proprement la caméra quand on quitte la page
-  // Sinon la LED verte/orange du téléphone reste allumée en tâche de fond !
-  if (streamRef.value) {
-    streamRef.value.getTracks().forEach(track => track.stop());
-  }
+  controllerRef.value?.stopProcessVideo();
+  streamRef.value?.getTracks().forEach(track => track.stop());
 });
 </script>
 
