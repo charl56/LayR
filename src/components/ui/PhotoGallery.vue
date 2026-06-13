@@ -40,6 +40,7 @@ const initAnimations = () => {
       trigger: card,
       start: "top center",
       end: "bottom center",
+      pinSpacing: true,
       // markers: true,
       onEnter: () => {
         if (artist.value.projets[index] == undefined) return;
@@ -114,7 +115,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .photo-galery {
   width: 100%;
-  min-height: 100svh;
+  padding-bottom: 5vh;
   text-align: center;
   position: relative;
   overflow: hidden;

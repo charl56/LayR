@@ -29,6 +29,9 @@ const prepareText = (textElement: HTMLElement, textContent: string) => {
 };
 
 const initAnimations = async () => {
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  
   if (!containerRef.value) return;
 
   if (ctx.value) {
@@ -50,6 +53,7 @@ const initAnimations = async () => {
         pin: true,
         pinSpacing: true, // 📌 Indique à GSAP de pousser proprement le composant du dessous (Collection)
         invalidateOnRefresh: true,
+        // markers: true,
       }
     });
 
@@ -80,7 +84,7 @@ const initAnimations = async () => {
 
   }, containerRef.value);
 
-  ScrollTrigger.refresh();
+  // ScrollTrigger.refresh();
 };
 
 watch(() => props.links, async () => {

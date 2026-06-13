@@ -13,13 +13,16 @@ const buttonRef = ref<HTMLElement | null>(null);
 const ctx = ref<gsap.Context | null>(null);
 
 const initScannerAnimation = async () => {
+
+  await new Promise(resolve => setTimeout(resolve, 100));
+
   if (!buttonRef.value) return;
 
   if (ctx.value) {
     ctx.value.revert();
   }
 
-
+  console.log("go")
   await nextTick();
 
   ctx.value = gsap.context(() => {
@@ -67,7 +70,7 @@ const initScannerAnimation = async () => {
 
   }, buttonRef.value);
 
-  ScrollTrigger.refresh(); // ✅ On rafraîchit les triggers après l'animation
+  // ScrollTrigger.refresh(); // ✅ On rafraîchit les triggers après l'animation
 };
 
 const goToScanner = () => {
@@ -96,8 +99,8 @@ const unsubscribeRouter = router.afterEach(() => {
       if (icon) gsap.set(icon, { autoAlpha: 0 });
     }
 
-    ScrollTrigger.refresh();
-  }, 100);
+    // ScrollTrigger.refresh();
+  }, 150);
 });
 
 
@@ -105,6 +108,7 @@ onMounted(() => {
   // 🚀 On vérifie si le scroll est bien à 0
   const checkScrollAndInit = () => {
     if (window.scrollY === 0) {
+      console.log("ouai")
       // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
       initScannerAnimation();
     } else {

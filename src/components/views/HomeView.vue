@@ -11,11 +11,11 @@ import Contact from '@/components/layout/Contact.vue';
 import { useNavigationStore } from '@/composables/useNavigationStore';
 import { onMounted } from 'vue';
 // --- State
-const { 
-  currentPage, 
-  isCollectionOpen, 
-  currentData, 
-  goToCollection 
+const {
+    currentPage,
+    isCollectionOpen,
+    currentData,
+    goToCollection
 } = useNavigationStore();
 
 
@@ -24,12 +24,23 @@ const {
 <template>
     <BtnScanner />
 
-    <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" :current-page="currentPage"/>
-    <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
-    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
-        :isCollectionOpen="isCollectionOpen" />
-    <PhotoGallery v-if="currentPage == 'collection'" :currentData="currentData" />
-    <WhoAreWe v-else />
+    <div v-if="currentPage == 'home'">
+        <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+            :current-page="currentPage" />
+        <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
+        <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
+            :isCollectionOpen="isCollectionOpen" />
+        <WhoAreWe />
+    </div>
+
+    <div v-else-if="currentPage == 'collection'">
+        <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+            :current-page="currentPage" />
+        <PhotoGallery :currentData="currentData" />
+        <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
+            :isCollectionOpen="isCollectionOpen" />
+        <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
+    </div>
 
     <Contact />
 </template>

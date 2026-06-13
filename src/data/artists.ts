@@ -26,7 +26,7 @@ export const ARTISTS: Artist[] = [
             { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' },
             { name: 'Nvl vie/Need4Speed', img: 'kelaggs/nouvellevie.webp', videoId:'kelaggs_nvlvie', video: 'artists/kelaggs/kelaggs_nvlvie.mp4' }
         ],        
-        description: 'Ce projet de 11 titres poursuit l’évolution de Kelaggs vers une musique plus électronique, influencée par la dubstep de Skrillex, l’ambient et la vague hyperpop actuelle. Entièrement auto-produit, il mélange sonorités électroniques, textures immersives et esthétique pop 2010.',
+        description: 'Ce projet de 9 titres poursuit l’évolution de Kelaggs vers une musique plus électronique, influencée par la dubstep de Skrillex, l’ambient et la vague hyperpop actuelle. Entièrement auto-produit, il mélange sonorités électroniques, textures immersives et esthétique pop 2010.',
         links: {
             apple: 'https://music.apple.com/us/artist/kelaggs/1548345854',
             spotify: 'https://spotify.com/kelaggs',

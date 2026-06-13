@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else class="camera-wrapper">
-      <video ref="videoRef" autoplay playsinline muted controls="false" @loadedmetadata="startImageAnalysis"
+      <video ref="videoRef" autoplay playsinline muted @loadedmetadata="startImageAnalysis"
         class="video-feed"></video>
 
       <div class="scanner-overlay">
