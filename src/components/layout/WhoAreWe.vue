@@ -25,13 +25,13 @@ const initScrollEffects = async () => {
   ctx.value = gsap.context(() => {
     // 💡 Synchronisation millimétrée avec le scroll entre le bas et le milieu de l'écran
     gsap.fromTo(titleRef.value, 
-      { scale: 0.7 }, // Plus grand à l'apparition en bas
+      { scale: 0.8 }, // Plus grand à l'apparition en bas
       {
         scale: 1, // Revient à la normale
         ease: "none",
         scrollTrigger: {
           trigger: headerRef.value,
-          start: "top bottom", // Quand le haut du bandeau passe le bas de l'écran
+          start: "top 70%", // Quand le haut du bandeau passe le bas de l'écran
           end: "top 40%",      // Jusqu'à ce qu'il atteigne le milieu
           scrub: true,         // Suit le mouvement du doigt
           invalidateOnRefresh: true

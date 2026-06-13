@@ -3,9 +3,14 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useNavigationStore } from '@/composables/useNavigationStore';
 import { useRouter } from 'vue-router';
 import { Controller } from 'mind-ar/dist/mindar-image.prod.js'; // Import de MindAR pour le scan d'images
+import { useCollectionStore } from '@/composables/useCollectionStore';
+import getAssetSrc from '@/utils/imageUtils';
 
-const { goToCollection } = useNavigationStore();
+
+
+
 const router = useRouter();
+const { addProjectToCollection } = useCollectionStore();
 
 // --- État Local
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -58,7 +63,13 @@ const initCamera = async () => {
 // Cette fonction pourra être appelée en boucle (avec un requestAnimationFrame ou setInterval)
 // pour analyser le flux vidéo image par image (ex: avec Tesseract.js, OpenCV, etc.)
 const startImageAnalysis = async () => {
+  if (!videoRef.value) {
+    console.error("❌ Erreur : L'élément HTML <video> n'est pas disponible.");
+    return;
+  }
 
+  // 1. Vérification de la taille de la vidéo (Crucial pour MindAR)
+  console.log(`📹 Dimensions du flux vidéo reçues : ${videoRef.value.videoWidth}x${videoRef.value.videoHeight}`);
   // 1. Initialise le contrôleur MindAR avec la dimension de ton flux
   const controller = new Controller({
     inputWidth: videoRef.value?.videoWidth || 1280,
@@ -66,12 +77,27 @@ const startImageAnalysis = async () => {
     maxTrack: 1 // On cherche une seule affiche à la fois
   });
 
+
+
+  console.log("⚙️ Compilations des matrices graphiques (controller.init)...");
+  if (typeof controller.init === 'function') {
+    await controller.init();
+  }
+
   // 2. Charge ton fichier contenant les empreintes géométriques de tes affiches
   // (généré à partir de tes images d'affiches dans l'outil mind-ar compiler)
-  await controller.addImageTargets('/mind-targets/kelaggs_nvlvie.mind');
+  console.log("⏳ Chargement du fichier de cibles (.mind)...");
+  console.log(getAssetSrc('mind-targets/kelaggs_nvlvie.mind'))
+  await controller.addImageTargets(getAssetSrc('mind-targets/kelaggs_nvlvie.mind'));
+
 
   // 3. Associe le flux vidéo au moteur d'analyse
-  await controller.dummyRun(videoRef.value);
+  console.log("⏳ Initialisation du dummyRun (Warmup du moteur)...");
+  const warmup = await controller.dummyRun(videoRef.value);
+  // On inspecte ce que le moteur a compris de la vidéo
+  console.log("⚙️ Statut du moteur après dummyRun :", warmup);
+
+  let frameCount = 0;
 
   // 4. Lance la boucle d'analyse en temps réel
   const detectLoop = () => {
@@ -79,8 +105,15 @@ const startImageAnalysis = async () => {
     if (!streamRef.value || !videoRef.value) return;
 
     try {
+      frameCount++;
       const results = controller.processVideo(videoRef.value);
-      console.log(results)
+
+      // Log d'échantillonnage : On affiche un log toutes les 100 frames 
+      // pour éviter de saturer ta console, tout en vérifiant que ça tourne
+      if (frameCount % 100 === 0) {
+        console.log(`📸 Frame #${frameCount} analysée. Résultat brut du controller :`, results);
+      }
+
       // 2. Si le moteur n'a rien renvoyé sur cette frame (results est undefined ou nul)
       // On passe tranquillement à la frame suivante sans crasher !
       if (!results) {
@@ -133,7 +166,7 @@ const mapTargetIndexToVideo = (index: number): string => {
 
 const onScanSuccess = (video: string) => {
   console.log("Affiche scannée avec succès ! ID de l'artiste :", video.split('_'));
-
+  // addProjectToCollection(video);
 
   // goToCollection(detectedArtistId);
   // router.push('/');
@@ -141,6 +174,13 @@ const onScanSuccess = (video: string) => {
 
 // --- Cycle de vie
 onMounted(() => {
+  // Debug : inspecte ce que le CDN expose réellement
+  console.log('window.MINDAR :', (window as any).MINDAR);
+  console.log('window.MindAR :', (window as any).MindAR);
+  console.log('window keys with "mind" :',
+    Object.keys(window).filter(k => k.toLowerCase().includes('mind'))
+  );
+
   initCamera();
 });
 

@@ -4,9 +4,11 @@ import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { Links } from '@/types/types';
+import { useNavigationStore } from '@/composables/useNavigationStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const { currentPage } = useNavigationStore(); 
 const props = defineProps<{
   text1: string,
   imageUrl: string,
@@ -109,7 +111,7 @@ onMounted(() => {
     <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
 
     <div class="content-overlay">
-      <div ref="text1Ref" class="only-one-text">
+      <div ref="text1Ref" class="only-one-text" :class="currentPage === 'home' ? 'text-color-white' : 'text-color-red'">
         <p>{{ text1 }}</p>
       </div>
 
@@ -162,7 +164,7 @@ onMounted(() => {
   gap: 2rem;
   padding: 0 1rem;
   box-sizing: border-box;
-  mix-blend-mode: difference;
+  /* mix-blend-mode: difference; */
 }
 
 .only-one-text {
@@ -209,6 +211,14 @@ onMounted(() => {
   height: 50px;
   width: 50px;
   object-fit: contain;
+}
+
+.text-color-white {
+  color: #fff;
+}
+
+.text-color-red {
+  color: var(--layr-pink-1);
 }
 
 </style>

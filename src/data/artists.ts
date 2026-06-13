@@ -33,19 +33,6 @@ export const ARTISTS: Artist[] = [
         }
     },
     {
-        id: 'dimes',
-        name: 'Dimes',
-        shortBio1: 'Dimes crée des expériences visuelles captivantes qui marient art urbain et technologie moderne.',
-        shortBio2: 'Ses créations explorent les frontières entre street art traditionnel et art numérique contemporain.',
-        image1: 'stronboscoo.png',
-        image2: 'restinstar.png',
-        projets: [
-            { name: 'RestInStar', img: 'galerie.png' },
-            { name: 'Stronbosco', img: 'galerie.png' }
-        ],
-        description: 'Dimes transforme les murs en galeries éphémères, donnant vie aux rues avec chaque coup de pinceau et chaque pixel.',
-    },
-    {
         id: 'luvresval',
         name: 'Luv Resval',
         shortBio1: 'Luv Resval est un rappeur français influencé par Young Thug et Lil Uzi Vert, connu pour son approche poétique du rap et ses freestyles viraux.',

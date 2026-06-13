@@ -9,3 +9,7 @@ Voir scanner : lancer quand on detect une image parmis les 4, on lance l'animati
 Galerie : photos enregistrées en couleurs, es autres grisées
 
 
+
+Si suite : 
+    Organisation photo/video/artistes
+
