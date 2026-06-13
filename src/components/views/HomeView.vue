@@ -25,21 +25,13 @@ const {
     <BtnScanner />
 
     <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1" :current-page="currentPage"/>
-
-    <Collection v-if="currentPage == 'home'" :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
-    <InfoLayout2 v-if="currentPage == 'home'" :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
+    <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
+    <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
         :isCollectionOpen="isCollectionOpen" />
-    
     <PhotoGallery v-if="currentPage == 'collection'" :currentData="currentData" />
-    <InfoLayout2 v-if="currentPage == 'collection'" :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
-    :isCollectionOpen="isCollectionOpen" />
-    <Collection v-if="currentPage == 'collection'" :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
-    
-    
-    <WhoAreWe v-if="currentPage == 'home'" />
+    <WhoAreWe v-else />
+
     <Contact />
-
-
 </template>
 
 <style scoped></style>

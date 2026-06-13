@@ -17,7 +17,6 @@ const props = defineProps<{
 const containerRef = ref<HTMLElement | null>(null);
 const text1Ref = ref<HTMLElement | null>(null);
 const text2Ref = ref<HTMLElement | null>(null);
-
 const ctx = ref<gsap.Context | null>(null);
 
 const prepareText = (textElement: HTMLElement, textContent: string) => {
@@ -30,13 +29,6 @@ const prepareText = (textElement: HTMLElement, textContent: string) => {
 const initAnimations = async () => {
   if (!containerRef.value) return;
 
-  // ⚠️ CRUCIAL : On détruit proprement l'ancienne timeline et ses ScrollTriggers 
-  // avant de reconstruire pour éviter les fuites de mémoire et les conflits
-  if (ctx.value) {
-    ctx.value.revert();
-    ctx.value = null;
-  }
-
   // Attend que Vue applique les nouveaux textes bruts dans le DOM
   await nextTick();
 
@@ -45,15 +37,15 @@ const initAnimations = async () => {
   if (text2Ref.value) prepareText(text2Ref.value, props.text2);
 
   ctx.value = gsap.context(() => {
-    
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.value,
         start: "top top",
-        end: "+=50%", 
+        end: "+=50%",
         scrub: 1,
-        pin: true, 
-        pinSpacing: true, 
+        pin: true,
+        pinSpacing: true,
         invalidateOnRefresh: true,
       }
     });
@@ -78,21 +70,22 @@ const initAnimations = async () => {
 
   }, containerRef.value);
 
-  // 🔄 Force ScrollTrigger à recalculer toutes les positions de la page
-  ScrollTrigger.refresh();
 };
 
-// 🎯 SURVEILLANCE : Si les textes ou l'image changent, on relance tout !
-watch(
-  () => [props.text1, props.text2, props.imageUrl], 
-  async () => {
-    await initAnimations();
-  }, 
-  { deep: true }
-);
-
 onMounted(() => {
-  initAnimations();
+  // 🚀 On vérifie si le scroll est bien à 0
+  const checkScrollAndInit = () => {
+    if (window.scrollY === 0) {
+      // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
+      initAnimations();
+    } else {
+      // L'écran est encore en train de remonter, on réessaie à la prochaine frame (16ms)
+      requestAnimationFrame(checkScrollAndInit);
+    }
+  };
+
+  // On lance la vérification
+  requestAnimationFrame(checkScrollAndInit);
 
   let width = window.innerWidth;
   const onResize = () => {
@@ -109,6 +102,7 @@ onMounted(() => {
     if (ctx.value) ctx.value.revert();
   });
 });
+
 </script>
 
 <template>
@@ -138,7 +132,8 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  position: absolute; /* ⬅️ Pense à remettre l'image en absolute pour que le texte se pose dessus ! */
+  position: absolute;
+  /* ⬅️ Pense à remettre l'image en absolute pour que le texte se pose dessus ! */
   top: 0;
   left: 0;
   z-index: 1;

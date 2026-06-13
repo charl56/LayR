@@ -28,7 +28,7 @@ const toggleList = () => {
 
 // Fonction pour gérer le clic sur un artiste
 const handleArtistClick = (artist: Artist) => {
-  currentArtistId.value = artist.id;
+  // currentArtistId.value = artist.id;
   goToCollection(artist.id);
   isOpen.value = false;
   emit('update:isOpen', false); // Émet false pour fermer proprement partout

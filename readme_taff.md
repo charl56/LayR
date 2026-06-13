@@ -26,3 +26,9 @@ Voir scanner :
 Si suite : 
     Organisation photo/video/artistes
 
+
+
+
+page accueil
+page artiste
+page scanner

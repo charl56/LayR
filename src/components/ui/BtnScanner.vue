@@ -33,7 +33,6 @@ const initScannerAnimation = async () => {
 
     gsap.to(buttonRef.value, {
       scrollTrigger: {
-        markers: true,
         trigger: document.body,
         start: "top top",
         end: "10% -100px",
@@ -101,36 +100,39 @@ const unsubscribeRouter = router.afterEach(() => {
   }, 100);
 });
 
-const refreshScannerTrigger = async () => {
-  await nextTick();
-  // 1. On nettoie complètement l'ancienne configuration GSAP sur le bouton
-  if (buttonRef.value) {
-    gsap.killTweensOf(buttonRef.value);
-    // On reset TOUTES les propriétés physiques injectées par GSAP
-    gsap.set(buttonRef.value, { clearProps: "all" }); 
-    
-    // On remet l'état de départ du texte et de l'icône
-    const text = buttonRef.value.querySelector('.btn-text');
-    const icon = buttonRef.value.querySelector('.btn-icon');
-    if (text) gsap.set(text, { clearProps: "all" });
-    if (icon) gsap.set(icon, { clearProps: "all" });
-  }
-
-  // 2. On reconstruit l'animation sur les nouvelles bases de la page actuelle
-  initScannerAnimation();
-};
 
 onMounted(() => {
-  initScannerAnimation();
+  // 🚀 On vérifie si le scroll est bien à 0
+  const checkScrollAndInit = () => {
+    if (window.scrollY === 0) {
+      // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
+      initScannerAnimation();
+    } else {
+      // L'écran est encore en train de remonter, on réessaie à la prochaine frame (16ms)
+      requestAnimationFrame(checkScrollAndInit);
+    }
+  };
+
+  // On lance la vérification
+  requestAnimationFrame(checkScrollAndInit);
+
+  let width = window.innerWidth;
+  const onResize = () => {
+    if (window.innerWidth !== width) {
+      width = window.innerWidth;
+      initScannerAnimation();
+    }
+  };
+
   window.addEventListener('resize', onResize);
 
+  onBeforeUnmount(() => {
+    unsubscribeRouter();
+    window.removeEventListener('resize', onResize);
+    if (ctx.value) ctx.value.revert();
+  });
 });
 
-onBeforeUnmount(() => {
-  unsubscribeRouter();
-  window.removeEventListener('resize', onResize);
-  if (ctx.value) ctx.value.revert();
-});
 
 </script>
 
