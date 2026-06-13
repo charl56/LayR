@@ -43,14 +43,14 @@ const initScrollEffects = async () => {
   ctx.value = gsap.context(() => {
     // 💡 L'animation est liée au doigt (scrub: true) entre le bas et le milieu de l'écran
     gsap.fromTo(titleRef.value, 
-      { scale: 1.15 }, // Commence légèrement plus grand lorsqu'il apparaît tout en bas
+      { scale: 0.7 }, // Commence légèrement plus grand lorsqu'il apparaît tout en bas
       {
         scale: 1, // Revient à sa taille normale (1)
         ease: "none",
         scrollTrigger: {
           trigger: headerRef.value,
           start: "top bottom", // Quand le composant entre par le bas
-          end: "top 50%",      // Jusqu'à ce qu'il atteigne le milieu de l'écran
+          end: "top 40%",      // Jusqu'à ce qu'il atteigne le milieu de l'écran
           scrub: true,         // Synchronisation millimétrée avec le scroll
           invalidateOnRefresh: true
         }

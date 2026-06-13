@@ -114,7 +114,6 @@ onMounted(() => {
 <template>
   <div ref="containerRef" class="info-layout" id="home">
     <img class="info-layout_img" :src="getAssetSrc(imageUrl)" />
-    {{ currentPage }}
     <div ref="text1Ref" class="two-text first" :class="currentPage === 'home' ? 'text-color-white' : 'text-color-red'">
       <p>{{ text1 }}</p>
     </div>
