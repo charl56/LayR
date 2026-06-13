@@ -10,6 +10,10 @@ Galerie : photos enregistrées en couleurs, es autres grisées
 
 
 
+au scan, on va sur layr.com/scanner/animationVideo
+
+
+
 Si suite : 
     Organisation photo/video/artistes
 

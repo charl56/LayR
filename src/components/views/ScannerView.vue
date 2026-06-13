@@ -1,33 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import { useNavigationStore } from '@/composables/useNavigationStore';
-import { useRouter } from 'vue-router';
-import { Controller } from 'mind-ar/dist/mindar-image.prod.js'; // Import de MindAR pour le scan d'images
+import { ARTISTS } from '@/data/artists';
 import { useCollectionStore } from '@/composables/useCollectionStore';
+import { useRouter } from 'vue-router';
 import getAssetSrc from '@/utils/imageUtils';
-
-
-
-// 🚀 SOLUTION : On va forcer manuellement l'initialisation du moteur graphique 
-// pour pallier l'absence des scripts d'installation automatique.
-import * as tf from '@tensorflow/tfjs-core';
-import '@tensorflow/tfjs-backend-webgl';
-
-// Cette fonction asynchrone doit être appelée une fois au démarrage de ton application
-const initTensorFlow = async () => {
-  try {
-    console.log("⏳ Initialisation du moteur TensorFlow.js...");
-    await tf.setBackend('webgl');
-    await tf.ready();
-    console.log("🤖 [TensorFlow] Moteur WebGL activé avec succès !");
-  } catch (e) {
-    console.warn("⚠️ Impossible de forcer le WebGL, repli sur le moteur par défaut", e);
-  }
-};
+import jsQR from 'jsqr';
 
 
 const router = useRouter();
-const { addProjectToCollection } = useCollectionStore();
 
 // --- État Local
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -79,82 +59,55 @@ const initCamera = async () => {
 // --- Emplacement pour ta future logique d'analyse
 // Cette fonction pourra être appelée en boucle (avec un requestAnimationFrame ou setInterval)
 // pour analyser le flux vidéo image par image (ex: avec Tesseract.js, OpenCV, etc.)
-const startImageAnalysis = async () => {
+const startImageAnalysis = () => {
   if (!videoRef.value) return;
 
-  console.log(`📹 Dimensions vidéo : ${videoRef.value.videoWidth}x${videoRef.value.videoHeight}`);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
 
-  const controller = new Controller({
-    inputWidth: videoRef.value.videoWidth || 1280,
-    inputHeight: videoRef.value.videoHeight || 720,
-    maxTrack: 1,
-    warmupTolerance: 3,  // défaut probablement plus élevé
-    missTolerance: 3,
-  });
+  const detectLoop = () => {
+    if (!videoRef.value || !streamRef.value) return;
 
-  controllerRef.value = controller;
+    canvas.width = videoRef.value.videoWidth;
+    canvas.height = videoRef.value.videoHeight;
+    ctx.drawImage(videoRef.value, 0, 0);
 
-  // ✅ Pas de init() — n'existe pas
-  // ✅ Charge les targets directement
-  await controller.addImageTargets(
-    getAssetSrc('mind-targets/kelaggs_nvlvie.mind')
-  );
-  console.log('📦 Targets chargées');
-
-  // ✅ Warmup GPU
-  await controller.dummyRun(videoRef.value);
-  console.log('✅ dummyRun terminé');
-
-  // ✅ Surcharge onUpdate — propriété native du controller
-  controller.onUpdate = (data: any) => {
-    console.log('🔄 onUpdate raw :', JSON.stringify(data)); // ← log brut
-    if (!data) return;
-
-    // On ignore les frames sans détection
-    if (data.type === 'processDone') return;
-
-    if (data.type === 'updateMatrix') {
-      const { targetIndex, worldMatrix } = data;
-
-      if (worldMatrix !== null) {
-        // ✅ Cible trouvée et trackée
-        console.log('🎯 Cible détectée ! Index :', targetIndex);
-        controller.stopProcessVideo();
-        onScanSuccess(mapTargetIndexToVideo(targetIndex));
-      } else {
-        // Cible perdue
-        console.log('❌ Cible perdue, index :', targetIndex);
-      }
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    console.log(code)
+    if (code) {
+      console.log('✅ QR Code détecté :', code.data);
+      onScanSuccess(code.data);
+      return; // Stop la boucle
     }
+
+    requestAnimationFrame(detectLoop);
   };
 
-  // ✅ Lance la boucle interne
-  controller.processVideo(videoRef.value);
-  console.log('🚀 processVideo lancé');
+  requestAnimationFrame(detectLoop);
 };
 
-const mapTargetIndexToVideo = (index: number): string => {
-  // Exemple : si ton image 0 dans le fichier .mind est celle de l'artiste 1, etc.
-  const mapping: Record<number, string> = {
-    0: 'kelaggs_nvlvie',
-    1: 'kelaggs_nvlvie',
-    2: 'kelaggs_nvlvie',
-    3: 'kelaggs_nvlvie',
-  };
-  return mapping[index] || 'unknown';
-};
 
-const onScanSuccess = (video: string) => {
-  console.log("Affiche scannée avec succès ! ID de l'artiste :", video.split('_'));
-  // addProjectToCollection(video);
+const onScanSuccess = (lien: string) => {
+  console.log("Affiche scannée avec succès ! ID de l'artiste :", lien);
 
-  // goToCollection(detectedArtistId);
-  // router.push('/');
+  // TODO
+  // Exemple de lien scanné https://layr.ostudio426.com/scanner/kelaggs_nvlvie
+
+  // On récupère l'id du projet (après /scanner/), on le recherche dans nos données dans ARTIST, et on ajoute le lien dans l'url (si paq déjà, mais quand on scan il n'y sera pas normalement).
+  // La video se lance, en presque plein ecran, genre 80% peut être, dans un nouveau div
+    // On peut fermer la video avec un bouton X, ou en cliquant sur le fond noir, ce qui enlève l'id de l'url
+
+
 };
 
 // --- Cycle de vie
 onMounted(() => {
   initCamera();
+  // TODO
+  // Ici on check l'url pour voir si une video est demandée (arrivé depuis app externe)
+  // Si oui, on lance la video directement, sinon on attend le scan
+
 });
 
 onBeforeUnmount(() => {

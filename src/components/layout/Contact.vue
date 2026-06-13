@@ -5,7 +5,7 @@
         </div>
         
         <div class="contact-icons">
-            <a class="icon-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
+            <!-- <a class="icon-contact" aria-label="Toggle menu" href="https://www.facebook.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/facebook.webp"/>
             </a>
@@ -20,7 +20,7 @@
             <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/youtube.webp"/>
-            </a>
+            </a> -->
             <a class="icon-contact" aria-label="Toggle menu" href="https://www.youtube.com/" target="_blank"
                 rel="noopener noreferrer">
                 <img alt="Logo" class="logo" src="@/assets/mail.webp"/>
