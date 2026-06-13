@@ -156,7 +156,7 @@ onMounted(() => {
 }
 
 .text-color-red {
-  color: var(--layr-red-1);
+  color: var(--layr-pink-1);
 }
 
 .two-text p {

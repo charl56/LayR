@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useNavigationStore } from '@/composables/useNavigationStore';
 import { useRouter } from 'vue-router';
+import { Controller } from 'mind-ar/dist/mindar-image.prod.js'; // Import de MindAR pour le scan d'images
 
 const { goToCollection } = useNavigationStore();
 const router = useRouter();
@@ -31,7 +32,7 @@ const initCamera = async () => {
 
     // Demande d'autorisation au navigateur
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    
+
     streamRef.value = stream;
     hasAccess.value = true;
 
@@ -56,16 +57,86 @@ const initCamera = async () => {
 // --- Emplacement pour ta future logique d'analyse
 // Cette fonction pourra être appelée en boucle (avec un requestAnimationFrame ou setInterval)
 // pour analyser le flux vidéo image par image (ex: avec Tesseract.js, OpenCV, etc.)
-const startImageAnalysis = () => {
-  console.log("Flux vidéo prêt. Prêt à brancher la lib de scan d'images.");
-  
-  // Exemple de déclenchement manuel pour tes tests vers ton store global :
-  // onScanSuccess('un-id-artiste-existant');
+const startImageAnalysis = async () => {
+
+  // 1. Initialise le contrôleur MindAR avec la dimension de ton flux
+  const controller = new Controller({
+    inputWidth: videoRef.value?.videoWidth || 1280,
+    inputHeight: videoRef.value?.videoHeight || 720,
+    maxTrack: 1 // On cherche une seule affiche à la fois
+  });
+
+  // 2. Charge ton fichier contenant les empreintes géométriques de tes affiches
+  // (généré à partir de tes images d'affiches dans l'outil mind-ar compiler)
+  await controller.addImageTargets('/mind-targets/kelaggs_nvlvie.mind');
+
+  // 3. Associe le flux vidéo au moteur d'analyse
+  await controller.dummyRun(videoRef.value);
+
+  // 4. Lance la boucle d'analyse en temps réel
+  const detectLoop = () => {
+    // 1. Sécurité : si l'utilisateur quitte la page ou coupe la caméra, on stoppe tout
+    if (!streamRef.value || !videoRef.value) return;
+
+    try {
+      const results = controller.processVideo(videoRef.value);
+      console.log(results)
+      // 2. Si le moteur n'a rien renvoyé sur cette frame (results est undefined ou nul)
+      // On passe tranquillement à la frame suivante sans crasher !
+      if (!results) {
+        requestAnimationFrame(detectLoop);
+        return;
+      }
+
+      // 3. Gestion du format de MindAR : results peut être directement la prédiction, 
+      // ou un tableau contenant les prédictions de chaque affiche.
+      let prediction = null;
+      if (Array.isArray(results)) {
+        prediction = results[0]?.prediction; // Récupère la première affiche si c'est un tableau
+      } else {
+        prediction = results.prediction; // Récupère directement si c'est un objet
+      }
+
+      // 4. Si une affiche commence à être analysée
+      if (prediction && prediction.score > 0.7) {
+        console.log("Affiche détectée ! Score de confiance :", prediction.score);
+        console.log("Index de l'affiche :", prediction.targetIndex);
+
+        const video = mapTargetIndexToVideo(prediction.targetIndex);
+        onScanSuccess(video);
+        return; // 🎯 SUCCÈS : On arrête définitivement la boucle
+      }
+
+    } catch (loopError) {
+      // Si une frame a un bug mineur, on l'attrape ici pour éviter de bloquer l'application
+      console.warn("Erreur mineure pendant l'analyse de la frame :", loopError);
+    }
+
+    // 5. RECHARGE : Si on n'a rien trouvé à cette frame, on demande la frame suivante !
+    requestAnimationFrame(detectLoop);
+  };
+
+  requestAnimationFrame(detectLoop);
 };
 
-const onScanSuccess = (detectedArtistId: string) => {
-  goToCollection(detectedArtistId); 
-  router.push('/'); 
+
+const mapTargetIndexToVideo = (index: number): string => {
+  // Exemple : si ton image 0 dans le fichier .mind est celle de l'artiste 1, etc.
+  const mapping: Record<number, string> = {
+    0: 'kelaggs_nvlvie',
+    1: 'kelaggs_nvlvie',
+    2: 'kelaggs_nvlvie',
+    3: 'kelaggs_nvlvie',
+  };
+  return mapping[index] || 'unknown';
+};
+
+const onScanSuccess = (video: string) => {
+  console.log("Affiche scannée avec succès ! ID de l'artiste :", video.split('_'));
+
+
+  // goToCollection(detectedArtistId);
+  // router.push('/');
 };
 
 // --- Cycle de vie
@@ -84,7 +155,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="scanner-container">
-    
+
     <div v-if="hasAccess === null" class="message-overlay text-center">
       <div class="spinner"></div>
       <p>Veuillez autoriser l'accès à votre appareil photo pour scanner l'affiche...</p>
@@ -97,15 +168,8 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else class="camera-wrapper">
-      <video 
-        ref="videoRef" 
-        autoplay 
-        playsinline 
-        muted
-        controls="false" 
-        @loadedmetadata="startImageAnalysis"
-        class="video-feed"
-      ></video>
+      <video ref="videoRef" autoplay playsinline muted controls="false" @loadedmetadata="startImageAnalysis"
+        class="video-feed"></video>
 
       <div class="scanner-overlay">
         <div class="scan-frame">
@@ -172,7 +236,8 @@ onBeforeUnmount(() => {
 .video-feed {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Remplit l'écran sans déformer */
+  object-fit: cover;
+  /* Remplit l'écran sans déformer */
 }
 
 /* --- Viseur CSS --- */
@@ -187,20 +252,24 @@ onBeforeUnmount(() => {
   justify-content: center;
   align-items: center;
   /* Assombrit subtilement le contour du viseur */
-  background: rgba(0, 0, 0, 0.4); 
+  background: rgba(0, 0, 0, 0.4);
   z-index: 2;
-  pointer-events: none; /* Laisse l'utilisateur cliquer à travers si besoin */
+  pointer-events: none;
+  /* Laisse l'utilisateur cliquer à travers si besoin */
 }
 
 /* 📐 Dimensions du rectangle demandées (200px haut, 100px large) */
 .scan-frame {
   width: 200px;
   height: 300px;
-  border: 3px solid #ffffff; /* Le bandeau blanc autour */
+  border: 3px solid #ffffff;
+  /* Le bandeau blanc autour */
   border-radius: 12px;
-  background: transparent; /* Fond transparent */
+  background: transparent;
+  /* Fond transparent */
   position: relative;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 0 4000px rgba(0, 0, 0, 0.3); /* Crée la découpe sombre autour */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 0 4000px rgba(0, 0, 0, 0.3);
+  /* Crée la découpe sombre autour */
 }
 
 /* ⚡ Petit effet sympa de ligne de scan (laser) */
@@ -219,14 +288,22 @@ onBeforeUnmount(() => {
   margin-top: 2rem;
   font-size: 0.9rem;
   letter-spacing: 0.05em;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 /* --- Animations --- */
 @keyframes scanMove {
-  0% { top: 5%; }
-  50% { top: 95%; }
-  100% { top: 5%; }
+  0% {
+    top: 5%;
+  }
+
+  50% {
+    top: 95%;
+  }
+
+  100% {
+    top: 5%;
+  }
 }
 
 .spinner {
@@ -240,6 +317,8 @@ onBeforeUnmount(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

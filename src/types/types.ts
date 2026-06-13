@@ -10,6 +10,8 @@ export interface Info extends DTOInfo  {
 export interface Project {
   name: string;
   img: string;
+  video?: string;
+  videoId?: string;
 }
 export interface Artist extends DTOInfo, Info  {
   projets: Project[];

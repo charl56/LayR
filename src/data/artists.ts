@@ -23,7 +23,8 @@ export const ARTISTS: Artist[] = [
         projets: [
             { name: 'RestInStarr', img: 'kelaggs/restinstarr.jpg' },
             { name: 'Bass Krush', img: 'kelaggs/basskrush.jpg' },
-            { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' }
+            { name: 'Jm bcp trop', img: 'kelaggs/jmbcptrop.jpg' },
+            { name: 'Nvl vie/Need4Speed', img: 'kelaggs/nouvellevie.webp', videoId:'kelaggs_nvlvie', video: 'kelaggs/nvlvie.mp4' }
         ],        
         description: 'Kelaggs redonne à la rue son pouvoir d\'expression, en transformant chaque affiche en expérience à vivre et à garder.',
         links: {
