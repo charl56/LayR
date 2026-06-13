@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { Artist } from '@/types/types';
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { ARTISTS } from '@/data/artists';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const props = defineProps<{
   onCollectionButton: (id: string) => void;
@@ -11,8 +15,11 @@ const emit = defineEmits<{
   'update:isOpen': [value: boolean]
 }>();
 
-// État pour gérer l'ouverture/fermeture de la liste
+// États pour gérer l'ouverture, le DOM et GSAP
 const isOpen = ref(false);
+const headerRef = ref<HTMLElement | null>(null);
+const titleRef = ref<HTMLElement | null>(null);
+const ctx = ref<gsap.Context | null>(null);
 
 // Fonction pour basculer l'état de la liste
 const toggleList = () => {
@@ -24,19 +31,49 @@ const toggleList = () => {
 const handleArtistClick = (artist: Artist) => {
   props.onCollectionButton(artist.id);
   isOpen.value = false;
+  emit('update:isOpen', false); // Émet false pour fermer proprement partout
 };
 
+const initScrollEffects = async () => {
+  if (!headerRef.value || !titleRef.value) return;
 
+  if (ctx.value) ctx.value.revert();
+  await nextTick();
+
+  ctx.value = gsap.context(() => {
+    // 💡 L'animation est liée au doigt (scrub: true) entre le bas et le milieu de l'écran
+    gsap.fromTo(titleRef.value, 
+      { scale: 1.15 }, // Commence légèrement plus grand lorsqu'il apparaît tout en bas
+      {
+        scale: 1, // Revient à sa taille normale (1)
+        ease: "none",
+        scrollTrigger: {
+          trigger: headerRef.value,
+          start: "top bottom", // Quand le composant entre par le bas
+          end: "top 50%",      // Jusqu'à ce qu'il atteigne le milieu de l'écran
+          scrub: true,         // Synchronisation millimétrée avec le scroll
+          invalidateOnRefresh: true
+        }
+      }
+    );
+  }, headerRef.value);
+};
+
+onMounted(() => {
+  initScrollEffects();
+});
+
+onBeforeUnmount(() => {
+  if (ctx.value) ctx.value.revert();
+});
 </script>
 
 <template>
   <div id="collection" class="artist-list">
-    <!-- En-tête cliquable pour déployer/fermer la liste -->
-    <div class="artist-list-header" @click="toggleList">
-      <h2>COLLECTION</h2>
+    <div ref="headerRef" class="artist-list-header" @click="toggleList">
+      <h2 ref="titleRef" class="collection-title">COLLECTION</h2>
     </div>
 
-    <!-- Liste des artistes (affichée si isOpen = true) -->
     <div v-if="isOpen" class="artist-list-content">
       <div class="list-artist" v-for="artist in ARTISTS" :key="artist.id" @click="handleArtistClick(artist)">
         <h2>{{ artist.name }}</h2>
@@ -49,7 +86,6 @@ const handleArtistClick = (artist: Artist) => {
 .artist-list {
   width: 100%;
   overflow: hidden;
-  /* Évite les débordements */
 }
 
 .artist-list-header {
@@ -59,19 +95,15 @@ const handleArtistClick = (artist: Artist) => {
   align-items: center;
   padding: 1rem;
   cursor: pointer;
-  /* Curseur "main" pour indiquer que c'est cliquable */
   user-select: none;
-  /* Empêche la sélection du texte */
   background-color: v-bind('isOpen ? "white" : "black"');
-  /* Fond blanc si ouvert, noir sinon */
   color: v-bind('isOpen ? "black" : "white"');
-  /* Texte noir si ouvert, blanc sinon */
   transition: background-color 0.3s, color 0.3s;
-  /* Animation pour la transition */
 }
 
-.artist-list-header h2 {
+.collection-title {
   margin: 0;
+  will-change: transform; /* Optimisation de performance pour le scale dynamique */
 }
 
 .artist-list-content {
@@ -79,17 +111,18 @@ const handleArtistClick = (artist: Artist) => {
   padding: 0.5rem 0;
 }
 
-
 .list-artist {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: white;
-
   height: 50px;
   margin-bottom: 2rem;
 }
 
+.list-artist h2 {
+  margin: 0;
+}
 
 .list-artist:first-child {
   margin-top: 2.5rem;
@@ -99,28 +132,12 @@ const handleArtistClick = (artist: Artist) => {
   margin-bottom: 1rem;
 }
 
-.list-artist:hover{
+.list-artist:hover {
   color: white;
   background-color: var(--layr-color-1);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Nettoyage des styles obsolètes */
 .artist-list-content ul {
   list-style: none;
   padding: 0;
@@ -129,19 +146,13 @@ const handleArtistClick = (artist: Artist) => {
 
 .artist-list-content li {
   padding: 0.75rem 1rem;
-  /* Padding pour espacer le texte des bords */
   cursor: pointer;
-  /* Bandeau gris clair */
   margin: 0.25rem 0;
-  /* Espacement entre les éléments */
   width: 100%;
-  /* Prend toute la largeur */
   box-sizing: border-box;
-  /* Inclut le padding dans la largeur */
 }
 
 .artist-list-content li:hover {
   background-color: #d0d0d0;
-  /* Gris plus foncé au survol */
 }
 </style>

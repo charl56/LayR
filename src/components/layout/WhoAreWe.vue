@@ -1,24 +1,61 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // État pour gérer l'ouverture/fermeture de la liste
 const isOpen = ref(false);
+const headerRef = ref<HTMLElement | null>(null);
+const titleRef = ref<HTMLElement | null>(null);
+const ctx = ref<gsap.Context | null>(null);
 
 // Fonction pour basculer l'état de la liste
 const toggleList = () => {
   isOpen.value = !isOpen.value;
 };
 
+const initScrollEffects = async () => {
+  if (!headerRef.value || !titleRef.value) return;
+
+  if (ctx.value) ctx.value.revert();
+  await nextTick();
+
+  ctx.value = gsap.context(() => {
+    // 💡 Synchronisation millimétrée avec le scroll entre le bas et le milieu de l'écran
+    gsap.fromTo(titleRef.value, 
+      { scale: 1.15 }, // Plus grand à l'apparition en bas
+      {
+        scale: 1, // Revient à la normale
+        ease: "none",
+        scrollTrigger: {
+          trigger: headerRef.value,
+          start: "top bottom", // Quand le haut du bandeau passe le bas de l'écran
+          end: "top 50%",      // Jusqu'à ce qu'il atteigne le milieu
+          scrub: true,         // Suit le mouvement du doigt
+          invalidateOnRefresh: true
+        }
+      }
+    );
+  }, headerRef.value);
+};
+
+onMounted(() => {
+  initScrollEffects();
+});
+
+onBeforeUnmount(() => {
+  if (ctx.value) ctx.value.revert();
+});
 </script>
 
 <template>
   <div id="about" class="about">
-    <!-- En-tête cliquable pour déployer/fermer la liste -->
-    <div class="about-header" @click="toggleList">
-      <h2>QUI SOMMES-NOUS</h2>
+    <div ref="headerRef" class="about-header" @click="toggleList">
+      <h2 ref="titleRef" class="about-title">QUI SOMMES-NOUS</h2>
     </div>
 
-    <!-- Liste des artistes (affichée si isOpen = true) -->
     <div v-if="isOpen" class="about-content">
         <p class="about-text">
             Fondée à Bordeaux en 2026, LayR est née d'un constat simple : les affiches urbaines sont devenues banales, souvent ignorées.
@@ -49,14 +86,15 @@ const toggleList = () => {
   padding: 1rem;
   cursor: pointer; /* Curseur "main" pour indiquer que c'est cliquable */
   user-select: none; /* Empêche la sélection du texte */
-  background-color: var(--layr-color-1);
+  background-color: var(--layr-yellow-2);
   color: black;
   transition: background-color 0.3s, color 0.3s; /* Animation pour la transition */
 }
 
-.about-header h2 {
+.about-title {
   margin: 0;
   color: black;
+  will-change: transform; /* Option d'optimisation GPU pour le scale au scroll */
 }
 
 .about-content {
@@ -68,5 +106,4 @@ const toggleList = () => {
   padding: 1rem 1rem;
   text-align: center;
 }
-
 </style>

@@ -109,10 +109,11 @@ onMounted(() => {
 
 <style scoped>
 .info-layout {
-  height: 100vh; /* Garder 100vh ici. C'est GSAP qui va créer l'espace de scroll virtuel en injectant du padding automatique */
+  height: 100vh;
   width: 100%;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .info-layout_img {
@@ -129,6 +130,7 @@ onMounted(() => {
 .two-text {
   width: 80%;
   color: #fff;
+  mix-blend-mode: difference;
   position: absolute;
   z-index: 2;
   will-change: transform, opacity;

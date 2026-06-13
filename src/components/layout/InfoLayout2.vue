@@ -134,6 +134,7 @@ onMounted(() => {
   width: 100%;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .info-layout_img {
@@ -161,6 +162,7 @@ onMounted(() => {
   gap: 2rem;
   padding: 0 1rem;
   box-sizing: border-box;
+  mix-blend-mode: difference;
 }
 
 .only-one-text {
@@ -175,6 +177,12 @@ onMounted(() => {
   margin: 0;
 }
 
+:deep(.word-span) {
+  display: inline-block;
+  opacity: 0;
+  margin-right: 0.25rem;
+}
+
 .icons-music__div {
   display: flex;
   justify-content: center;
@@ -182,14 +190,12 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
-/* 💡 C'est ici que ça se joue : on définit l'état initial de départ en CSS */
 .icon-music {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   will-change: transform, opacity;
   
-  /* États initiaux (équivalents à ce qu'on faisait dans le .from) */
   opacity: 0;
   transform: translateY(60px) scale(0.3) rotate(-15deg);
 }
@@ -205,9 +211,4 @@ onMounted(() => {
   object-fit: contain;
 }
 
-:deep(.word-span) {
-  display: inline-block;
-  opacity: 0;
-  margin-right: 0.25rem;
-}
 </style>
