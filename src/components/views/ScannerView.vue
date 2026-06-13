@@ -122,7 +122,7 @@ const closeVideo = () => {
   startImageAnalysis(); // Reprend le scan
 };
 
-onScanSuccess("https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie");
+// onScanSuccess("https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie");
 
 
 // --- Cycle de vie
