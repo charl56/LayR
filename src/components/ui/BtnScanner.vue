@@ -15,27 +15,32 @@ const ctx = ref<gsap.Context | null>(null);
 const initScannerAnimation = async () => {
   if (!buttonRef.value) return;
 
-  if (ctx.value) ctx.value.revert();
+  if (ctx.value) {
+    ctx.value.revert();
+  }
+
+
   await nextTick();
 
   ctx.value = gsap.context(() => {
-    
+
     // 💡 Calcul dynamique des positions pour éviter d'utiliser "left"
     const targetX = 49 - (window.innerWidth / 2);
-    
+
     // On calcule l'écart pour le caler à 1.5rem (24px) du bas au lieu de 5rem
     // 5rem = 80px, 1.5rem = 24px -> Différence de 56px vers le bas
-    const targetY = 56; 
+    const targetY = 56;
 
     gsap.to(buttonRef.value, {
       scrollTrigger: {
+        markers: true,
         trigger: document.body,
-        start: "top top",      
-        end: "top -100px",      
-        scrub: 0.5,             
+        start: "top top",
+        end: "10% -100px",
+        scrub: 0.5,
       },
-      width: '50px',            
-      height: '50px',           
+      width: '50px',
+      height: '50px',
       // 💡 On utilise x et y à la place de left/bottom. C'est ultra fluide et safe !
       x: targetX,
       y: targetY,
@@ -50,7 +55,7 @@ const initScannerAnimation = async () => {
         scrollTrigger: {
           trigger: document.body,
           start: "top top",
-          end: "top -50px", 
+          end: "top -50px",
           scrub: 0.5,
         }
       });
@@ -62,37 +67,89 @@ const initScannerAnimation = async () => {
     }
 
   }, buttonRef.value);
+
+  ScrollTrigger.refresh(); // ✅ On rafraîchit les triggers après l'animation
 };
 
 const goToScanner = () => {
   router.push('/scanner');
 };
 
+const onResize = () => {
+  if (window.innerWidth !== currentWidth) {
+    currentWidth = window.innerWidth;
+    initScannerAnimation();
+  }
+};
+
+let currentWidth = window.innerWidth;
+
+
+const unsubscribeRouter = router.afterEach(() => {
+  setTimeout(() => {
+    if (buttonRef.value) {
+      gsap.set(buttonRef.value, { clearProps: "all" }); // 👈 Nettoie TOUT (x, y, width, height) pour repartir du CSS propre
+      gsap.set(buttonRef.value, { x: 0, y: 0, width: '50%', height: '50px' });
+
+      const text = buttonRef.value.querySelector('.btn-text');
+      const icon = buttonRef.value.querySelector('.btn-icon');
+      if (text) gsap.set(text, { autoAlpha: 1 });
+      if (icon) gsap.set(icon, { autoAlpha: 0 });
+    }
+
+    ScrollTrigger.refresh();
+  }, 100);
+});
+
+const refreshScannerTrigger = async () => {
+  await nextTick();
+  // 1. On nettoie complètement l'ancienne configuration GSAP sur le bouton
+  if (buttonRef.value) {
+    gsap.killTweensOf(buttonRef.value);
+    // On reset TOUTES les propriétés physiques injectées par GSAP
+    gsap.set(buttonRef.value, { clearProps: "all" }); 
+    
+    // On remet l'état de départ du texte et de l'icône
+    const text = buttonRef.value.querySelector('.btn-text');
+    const icon = buttonRef.value.querySelector('.btn-icon');
+    if (text) gsap.set(text, { clearProps: "all" });
+    if (icon) gsap.set(icon, { clearProps: "all" });
+  }
+
+  // 2. On reconstruit l'animation sur les nouvelles bases de la page actuelle
+  initScannerAnimation();
+};
+
 onMounted(() => {
   initScannerAnimation();
-
-  let width = window.innerWidth;
-  const onResize = () => {
-    if (window.innerWidth !== width) {
-      width = window.innerWidth;
-      initScannerAnimation();
-    }
-  };
   window.addEventListener('resize', onResize);
 
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', onResize);
-    if (ctx.value) ctx.value.revert();
-  });
 });
+
+onBeforeUnmount(() => {
+  unsubscribeRouter();
+  window.removeEventListener('resize', onResize);
+  if (ctx.value) ctx.value.revert();
+});
+
 </script>
 
 <template>
-  <button v-if="route.path !== '/scanner'" ref="buttonRef" class="scanner-btn" aria-label="Scanner" @click="goToScanner">
-    <span class="btn-text"><h2>SCANNER</h2></span>
-    
+  <button v-if="route.path !== '/scanner'" ref="buttonRef" class="scanner-btn" aria-label="Scanner"
+    @click="goToScanner">
+    <span class="btn-text">
+      <h2>SCANNER</h2>
+    </span>
+
     <span class="btn-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+        <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+        <line x1="7" y1="12" x2="17" y2="12" />
+      </svg>
     </span>
   </button>
 </template>
@@ -102,15 +159,15 @@ onMounted(() => {
   position: fixed;
   z-index: 999;
   cursor: pointer;
-  
+
   height: 50px;
   width: 50%;
-  
-  bottom: 5rem; 
+
+  bottom: 5rem;
   left: 50%;
   /* 💡 Le bouton est centré uniquement via le CSS initial */
   transform: translateX(-50%);
-  
+
   /* Retrait de left, bottom et width de will-change car GSAP s'occupe de la transform (x, y) */
   will-change: transform;
 
@@ -119,13 +176,13 @@ onMounted(() => {
   font-weight: bold;
   font-size: 0.9rem;
   letter-spacing: 0.05em;
-  border-radius: 50px; 
-  
+  border-radius: 50px;
+
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 h2 {
@@ -145,7 +202,8 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  visibility: hidden; /* Géré par autoAlpha */
+  visibility: hidden;
+  /* Géré par autoAlpha */
   opacity: 0;
 }
 
