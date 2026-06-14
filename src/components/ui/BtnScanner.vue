@@ -22,7 +22,6 @@ const initScannerAnimation = async () => {
     ctx.value.revert();
   }
 
-  console.log("go")
   await nextTick();
 
   ctx.value = gsap.context(() => {
@@ -93,7 +92,6 @@ const unsubscribeRouter = router.afterEach(() => {
       if (icon) gsap.set(icon, { autoAlpha: 0 });
     }
 
-    // ScrollTrigger.refresh();
   }, 150);
 });
 
@@ -102,9 +100,9 @@ onMounted(() => {
   // 🚀 On vérifie si le scroll est bien à 0
   const checkScrollAndInit = () => {
     if (window.scrollY === 0) {
-      // console.log("ouai")
+      console.log("ouai")
       // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
-      // initScannerAnimation();
+      initScannerAnimation();
     } else {
       // L'écran est encore en train de remonter, on réessaie à la prochaine frame (16ms)
       requestAnimationFrame(checkScrollAndInit);
@@ -118,14 +116,14 @@ onMounted(() => {
   const onResize = () => {
     if (window.innerWidth !== width) {
       width = window.innerWidth;
-      // initScannerAnimation();
+      initScannerAnimation();
     }
   };
 
   window.addEventListener('resize', onResize);
 
   onBeforeUnmount(() => {
-    unsubscribeRouter();
+    // unsubscribeRouter();
     window.removeEventListener('resize', onResize);
     if (ctx.value) ctx.value.revert();
   });

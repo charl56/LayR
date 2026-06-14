@@ -36,7 +36,7 @@ const {
     <div v-else-if="currentPage == 'collection'">
         <InfoLayout :key="'layout-' + (currentData.id || 'home')" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
-        <PhotoGallery :currentData="currentData" />
+        <PhotoGallery :key="'gallery-' + (currentData.id || 'collection')" :currentData="currentData" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
             :isCollectionOpen="isCollectionOpen" />
         <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
