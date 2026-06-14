@@ -412,7 +412,7 @@ onBeforeUnmount(() => {
 
 .btn-voir-gallerie {
   position: absolute;
-  bottom: 10vh;
+  bottom: 15vh;
   color: white;
   z-index: 1000;
   width: 100%;
