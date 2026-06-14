@@ -69,6 +69,18 @@ const initAnimations = () => {
 
 }
 
+const isCurrentImageUnlocked = (): boolean => {
+  if (!isArtist(props.currentData) || !currentProjectImg.value) return false;
+
+  // On trouve le projet correspondant à l'image affichée
+  const currentProject = props.currentData.projets.find(p => p.img === currentProjectImg.value);
+  if (!currentProject) return false;
+
+  // On vérifie s'il est dans le localStorage
+  const unlockedProjects = getProjectsByArtist(props.currentData.id);
+  return unlockedProjects.some(p => p.projectId === currentProject.videoId);
+};
+
 
 const handleProjectClick = (index: number) => {
   if (!isArtist(props.currentData)) return;
@@ -129,12 +141,15 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="image-overlay" :class="[showImage ? '' : 'hide-image']"
-      @click="isArtist(currentData) && handleProjectClick(currentData.projets.findIndex(p => p.img === currentProjectImg))">
-      <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image" />
+      @click="isArtist(currentData) && handleProjectClick(currentData.projets.findIndex(p => p.img === currentProjectImg))"
+      :style="{ pointerEvents: (showImage && isCurrentImageUnlocked()) ? 'auto' : 'none', cursor: 'pointer' }">
+      <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image"
+        :style="{ filter: (showImage && isCurrentImageUnlocked()) ? 'drop-shadow(2px 4px 10px grey)' : 'none' }" />
     </div>
 
     <div v-if="isArtist(currentData)" class="galery-div">
-      <div v-for="(projet, index) in currentData.projets" :key="projet.img" @click="handleProjectClick(index)" class="photo-card">
+      <div v-for="(projet, index) in currentData.projets" :key="projet.img" @click="handleProjectClick(index)"
+        class="photo-card">
         <div class="photo-info">
           <p class="photo-project">{{ projet.name }}</p>
         </div>
