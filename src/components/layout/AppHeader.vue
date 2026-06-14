@@ -48,21 +48,34 @@ onUnmounted(() => {
         <img alt="Logo" class="logo" src="@/assets/burger.svg" width="50" height="50" />
       </button>
       <nav class="header-nav" :class="{ 'header-nav--open': menuOpen }" ref="headerNavRef">
-        <ul class="nav-list">
+        <ul v-if="currentPage == 'home'" class="nav-list">
           <li class="nav-item">
             <a @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
           </li>
           <li class="nav-item">
             <a @click.stop="onHomeEvent('collection')"><h2>COLLECTIONS</h2></a>
           </li>
-
           <li v-if="currentPage == 'home'" class="nav-item">
             <a @click.stop="onHomeEvent('about')"><h2>QUI SOMMES-NOUS</h2></a>
           </li>
           <li v-else class="nav-item">
             <a @click.stop="onHomeEvent('galery')"><h2>GALLERIE</h2></a>
           </li>
+          <li class="nav-item">
+            <a @click.stop="onHomeEvent('contact')"><h2>CONTACT</h2></a>
+          </li>
+        </ul>
 
+        <ul v-else-if="currentPage == 'collection'" class="nav-list">
+          <li class="nav-item">
+            <a @click.stop="onHomeEvent()"><h2>ACCUEIL</h2></a>
+          </li>
+          <li class="nav-item">
+            <a @click.stop="onHomeEvent('galery')"><h2>GALLERIE</h2></a>
+          </li>
+          <li class="nav-item">
+            <a @click.stop="onHomeEvent('collection')"><h2>COLLECTIONS</h2></a>
+          </li>
           <li class="nav-item">
             <a @click.stop="onHomeEvent('contact')"><h2>CONTACT</h2></a>
           </li>

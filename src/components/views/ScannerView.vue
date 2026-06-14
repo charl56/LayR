@@ -135,6 +135,11 @@ const closeVideo = () => {
 // onScanSuccess("https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie");
 
 
+const onGaleryEvent = (path?: string) => {
+  router.push('/#galery');
+};
+
+
 // --- Cycle de vie
 onMounted(() => {
   initCamera();
@@ -201,7 +206,9 @@ onBeforeUnmount(() => {
 
 
     
-      <a v-if="currentArtistId" @click.stop=""><h3 class="btn-voir-gallerie">Voir galerie</h3></a>
+      <a v-if="currentArtistId" @click.stop="onGaleryEvent()"><h3 class="btn-voir-gallerie">Voir galerie</h3></a>
+
+
       <!-- Overlay vidéo -->
       <Transition name="fade">
         <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">

@@ -1,7 +1,4 @@
-galeire : images grisées => non scanée
-    -> lancer la video du projet
-
-
+Btn scanner bug si on se déplace en utilsant le menu
 
 
 descativer tous les btns/cliques sur les videos du scanner
