@@ -95,10 +95,12 @@ onUnmounted(() => {
   top: 0;
   z-index: 100;
   transition: 0.3s;
+  pointer-events: none;
 }
 
 .app-header--open {
   background-color: black;
+  pointer-events: auto;
 }
 
 .header-content {
@@ -117,6 +119,7 @@ onUnmounted(() => {
   background: none;
   border: none;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .menu-toggle a {
@@ -135,6 +138,7 @@ onUnmounted(() => {
   transform: translateY(-20rem);
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
   z-index: 99;
+  pointer-events: auto;
 }
 
 .header-nav--open {

@@ -100,7 +100,6 @@ onMounted(() => {
   // 🚀 On vérifie si le scroll est bien à 0
   const checkScrollAndInit = () => {
     if (window.scrollY === 0) {
-      console.log("ouai")
       // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
       initScannerAnimation();
     } else {

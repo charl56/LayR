@@ -71,5 +71,8 @@
 .icon-contact img {
     height: 50px;
     width: 50px;
+    
+    background-color: white;
+    border-radius: 50px;
 }
 </style>

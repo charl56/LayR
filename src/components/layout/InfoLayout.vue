@@ -73,7 +73,6 @@ const initAnimations = async () => {
 };
 
 onMounted(() => {
-  console.log("onmounted layoutinfo")
   // 🚀 On vérifie si le scroll est bien à 0
   const checkScrollAndInit = () => {
     if (window.scrollY === 0) {
