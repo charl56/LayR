@@ -28,7 +28,7 @@ const {
     <div v-if="currentPage == 'home'">
         <InfoLayout :key="'layout-' + (currentData.id || 'home') + '-' + homeKeyCounter" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
-        <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
+        <Collection :onCollectionButton="goToCollection" :key="'layout-' + (currentData.id || 'home') + '-' + homeKeyCounter" @update:isOpen="isCollectionOpen = $event" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
             :isCollectionOpen="isCollectionOpen" />
         <WhoAreWe />
@@ -40,7 +40,7 @@ const {
         <PhotoGallery :key="'gallery-' + (currentData.id || 'collection') + '-' + homeKeyCounter" :currentData="currentData" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
             :isCollectionOpen="isCollectionOpen" />
-        <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
+        <Collection :onCollectionButton="goToCollection" :key="'layout-' + (currentData.id || 'home') + '-' + homeKeyCounter" @update:isOpen="isCollectionOpen = $event" />
     </div>
 
     <Contact />
