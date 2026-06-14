@@ -19,6 +19,8 @@ Voir scanner :
     ajouter un loader de la video
 
 
+animer logo a larriver sur le site
+    Charger toutes les img dans une div, comme galery je crois
 
 
 

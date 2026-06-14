@@ -77,12 +77,6 @@ const goToScanner = () => {
   router.push('/scanner');
 };
 
-const onResize = () => {
-  if (window.innerWidth !== currentWidth) {
-    currentWidth = window.innerWidth;
-    initScannerAnimation();
-  }
-};
 
 let currentWidth = window.innerWidth;
 
@@ -108,9 +102,9 @@ onMounted(() => {
   // 🚀 On vérifie si le scroll est bien à 0
   const checkScrollAndInit = () => {
     if (window.scrollY === 0) {
-      console.log("ouai")
+      // console.log("ouai")
       // L'écran est bien tout en haut, on peut lancer GSAP de façon ultra précise
-      initScannerAnimation();
+      // initScannerAnimation();
     } else {
       // L'écran est encore en train de remonter, on réessaie à la prochaine frame (16ms)
       requestAnimationFrame(checkScrollAndInit);
@@ -124,7 +118,7 @@ onMounted(() => {
   const onResize = () => {
     if (window.innerWidth !== width) {
       width = window.innerWidth;
-      initScannerAnimation();
+      // initScannerAnimation();
     }
   };
 

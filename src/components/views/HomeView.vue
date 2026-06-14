@@ -22,10 +22,10 @@ const {
 </script>
 
 <template>
-    <BtnScanner />
+    <BtnScanner :key="'btnScanner-' + (currentData.id || 'home')" />
 
     <div v-if="currentPage == 'home'">
-        <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+        <InfoLayout :key="'layout-' + (currentData.id || 'home')" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
         <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
@@ -34,7 +34,7 @@ const {
     </div>
 
     <div v-else-if="currentPage == 'collection'">
-        <InfoLayout :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+        <InfoLayout :key="'layout-' + (currentData.id || 'home')" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
         <PhotoGallery :currentData="currentData" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"

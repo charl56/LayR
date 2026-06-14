@@ -69,7 +69,6 @@ const initAnimations = async () => {
 
     // 2. Animation des icônes de musique avec un .to()
     const icons = containerRef.value?.querySelector('.icons-music__div');
-    console.log('Icons found:', icons); // Debug: Vérifie si les icônes sont trouvées
     if (icons) {
       tl.to(icons, {
         opacity: 1,          // Deviennent visibles
@@ -84,7 +83,6 @@ const initAnimations = async () => {
 
   }, containerRef.value);
 
-  // ScrollTrigger.refresh();
 };
 
 watch(() => props.links, async () => {
