@@ -48,7 +48,7 @@ const initScrollEffects = async () => {
         scale: 1, // Revient à sa taille normale (1)
         ease: "none",
         scrollTrigger: {
-          markers: true,
+          // markers: true,
           trigger: headerRef.value,
           start: "top 70%", // Quand le composant entre par le bas
           end: "top 40%",      // Jusqu'à ce qu'il atteigne le milieu de l'écran
