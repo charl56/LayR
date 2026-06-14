@@ -10,6 +10,8 @@ const currentPage = ref<Page>('home');
 const currentArtistId = ref<string | null>(null);
 const isCollectionOpen = ref<boolean>(false);
 const router = useRouter();
+const homeKeyCounter = ref(0);
+
 
 export function useNavigationStore() {
 
@@ -43,6 +45,7 @@ export function useNavigationStore() {
     currentArtistId.value = null;
     currentPage.value = 'home';
     isCollectionOpen.value = false;
+    homeKeyCounter.value++;
 
     setTimeout(() => {
       ScrollTrigger.refresh();
@@ -54,6 +57,7 @@ export function useNavigationStore() {
     currentArtistId,
     isCollectionOpen,
     currentData,
+    homeKeyCounter,
     goToCollection,
     resetToHome
   };

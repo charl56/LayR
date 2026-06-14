@@ -15,6 +15,7 @@ const {
     currentPage,
     isCollectionOpen,
     currentData,
+    homeKeyCounter,
     goToCollection
 } = useNavigationStore();
 
@@ -22,10 +23,10 @@ const {
 </script>
 
 <template>
-    <BtnScanner :key="'btnScanner-' + (currentData.id || 'home')" />
+    <BtnScanner :key="'btnScanner-' + (currentData.id || 'home') + '-' + homeKeyCounter" />
 
     <div v-if="currentPage == 'home'">
-        <InfoLayout :key="'layout-' + (currentData.id || 'home')" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+        <InfoLayout :key="'layout-' + (currentData.id || 'home') + '-' + homeKeyCounter" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
         <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
@@ -34,9 +35,9 @@ const {
     </div>
 
     <div v-else-if="currentPage == 'collection'">
-        <InfoLayout :key="'layout-' + (currentData.id || 'home')" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
+        <InfoLayout :key="'layout-' + (currentData.id || 'home') + '-' + homeKeyCounter" :text1="currentData.shortBio1" :text2="currentData.shortBio2" :image-url="currentData.image1"
             :current-page="currentPage" />
-        <PhotoGallery :key="'gallery-' + (currentData.id || 'collection')" :currentData="currentData" />
+        <PhotoGallery :key="'gallery-' + (currentData.id || 'collection') + '-' + homeKeyCounter" :currentData="currentData" />
         <InfoLayout2 :text1="currentData.description" :image-url="currentData.image2" :links="currentData.links"
             :isCollectionOpen="isCollectionOpen" />
         <Collection :onCollectionButton="goToCollection" @update:isOpen="isCollectionOpen = $event" />
