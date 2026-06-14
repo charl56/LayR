@@ -115,7 +115,7 @@ const onScanSuccess = (lien: string) => {
   // Sauvegarde du projet
   for (const artist of ARTISTS) {
     if (artist.projets.find(p => p.videoId === videoId)) {
-      addProjectToCollection(artist.name, videoId);
+      addProjectToCollection(artist.id, videoId);
       currentArtistId.value = artist.id;
       currentPage.value = 'collection';
 

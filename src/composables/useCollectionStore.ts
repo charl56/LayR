@@ -4,15 +4,28 @@ import { ref, computed } from 'vue';
 export interface SavedProject {
   artistId: string;
   projectId: string;
-  unlockedAt: string; // Date du scan pour pouvoir trier par nouveauté
+  unlockedAt: string;
 }
 
 const STORAGE_KEY = 'layr_unlocked_projects';
 
-// 💡 État GLOBAL et UNIQUE (Déclaré en dehors du hook pour agir comme un Store)
-// On tente de charger les données existantes du localStorage au démarrage
-const initialData = localStorage.getItem(STORAGE_KEY);
-const collection = ref<SavedProject[]>(initialData ? JSON.parse(initialData) : []);
+// État GLOBAL et UNIQUE
+const collection = ref<SavedProject[]>([]);
+
+// 🚀 MÉTHODE DE LECTURE GLOBALE
+const loadFromStorage = () => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    collection.value = data ? JSON.parse(data) : [];
+    console.log("💾 Collection synchronisée depuis le localStorage :", collection.value);
+  } catch (error) {
+    console.error("❌ Erreur lors de la lecture du localStorage :", error);
+    collection.value = [];
+  }
+};
+
+// Auto-exécution immédiate au premier chargement de l'application
+loadFromStorage();
 
 export function useCollectionStore() {
 
@@ -23,7 +36,6 @@ export function useCollectionStore() {
 
   // --- ➕ MÉTHODE : Ajouter un projet à la collection
   const addProjectToCollection = (artistId: string, projectId: string) => {
-    // On vérifie si ce projet exact n'est pas déjà enregistré
     const exists = collection.value.some(
       (p) => p.artistId === artistId && p.projectId === projectId
     );
@@ -35,7 +47,7 @@ export function useCollectionStore() {
         unlockedAt: new Date().toISOString()
       });
       saveToStorage();
-      console.log(`🎉 Projet [${projectId}] de l'artiste [${artistId}] ajouté à la collection !`);
+      console.log(`🎉 Projet [${projectId}] de l'artiste [${artistId}] ajouté !`);
     }
   };
 
@@ -45,36 +57,30 @@ export function useCollectionStore() {
       (p) => !(p.artistId === artistId && p.projectId === projectId)
     );
     saveToStorage();
-    console.log(`🗑️ Projet [${projectId}] supprimé de la collection.`);
+    console.log(`🗑️ Projet [${projectId}] supprimé.`);
   };
 
-  // --- 🔍 MÉTHODE : Consulter si un projet spécifique est débloqué (Retourne un Boolean)
+  // --- 🔍 MÉTHODES DE RECHERCHE
   const isProjectUnlocked = (artistId: string, projectId: string): boolean => {
-    return collection.value.some(
-      (p) => p.artistId === artistId && p.projectId === projectId
-    );
+    return collection.value.some((p) => p.artistId === artistId && p.projectId === projectId);
   };
 
-  // --- 🔍 MÉTHODE : Consulter si un artiste a au moins un projet débloqué
   const isArtistUnlocked = (artistId: string): boolean => {
     return collection.value.some((p) => p.artistId === artistId);
   };
 
-  // --- 🗂️ CONSULTATION GÉNÉRALE (Getters)
-  
-  // Récupérer toute la collection (triée du plus récent au plus ancien scanné)
+  const getProjectsByArtist = (artistId: string) => {
+    console.log("getProjectsByArtist called with artistId:", artistId);
+    return collection.value.filter((p) => p.artistId === artistId);
+  };
+
+  // --- 🗂️ GETTERS COMPUTED
   const allSavedProjects = computed(() => {
     return [...collection.value].sort(
       (a, b) => new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime()
     );
   });
 
-  // Récupérer uniquement les projets liés à un artiste précis
-  const getProjectsByArtist = (artistId: string) => {
-    return collection.value.filter((p) => p.artistId === artistId);
-  };
-
-  // Nombre total de projets débloqués
   const totalUnlockedCount = computed(() => collection.value.length);
 
   return {
@@ -84,6 +90,7 @@ export function useCollectionStore() {
     totalUnlockedCount,
     
     // Méthodes d'action
+    loadFromStorage,
     addProjectToCollection,
     removeProjectFromCollection,
     isProjectUnlocked,

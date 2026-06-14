@@ -5,6 +5,7 @@ import getAssetSrc from '@/utils/imageUtils';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { useCollectionStore } from '@/composables/useCollectionStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +17,9 @@ const currentProjectImg = ref<string>('');
 const showImage = ref<boolean>(false);
 const triggerRefs = ref<ScrollTrigger[]>([]);
 const artist = ref<Artist>(ARTISTS[0]!);
+const { loadFromStorage, getProjectsByArtist } = useCollectionStore();
+const activeVideoUrl = ref<string | null>(null);
+const showVideo = ref<boolean>(false);
 
 
 function isArtist(data: Info): data is Artist {
@@ -26,7 +30,7 @@ const initAnimations = () => {
   if (!isArtist(props.currentData)) return;
 
   artist.value = props.currentData as Artist;
-  
+
   // Tuer les anciens triggers
   triggerRefs.value.forEach(trigger => {
     trigger.kill();
@@ -66,11 +70,41 @@ const initAnimations = () => {
 }
 
 
+const handleProjectClick = (index: number) => {
+  if (!isArtist(props.currentData)) return;
+
+  const targetProject = props.currentData.projets[index];
+  if (!targetProject) return;
+
+  // 1. Vérifier dans le localStorage via l'état chargé au mounted
+  const unlockedProjects = getProjectsByArtist(props.currentData.id);
+  const isUnlocked = unlockedProjects.some(p => p.projectId === targetProject.videoId);
+
+  // 2. Si le projet est débloqué, on récupère et lance la vidéo
+  if (isUnlocked && targetProject.video) {
+    activeVideoUrl.value = getAssetSrc(targetProject.video);
+    showVideo.value = true;
+  } else {
+    console.log(`🔒 Le projet [${targetProject.name}] n'est pas encore débloqué.`);
+  }
+};
+
+const closeVideo = () => {
+  showVideo.value = false;
+  activeVideoUrl.value = null;
+};
+
 onMounted(() => {
   // Délai pour laisser le DOM se rendre
   setTimeout(() => {
     initAnimations();
   }, 100);
+
+  loadFromStorage();
+  let projets = getProjectsByArtist(props.currentData.id);
+  console.log(projets)
+
+
 });
 
 onBeforeUnmount(() => {
@@ -90,25 +124,29 @@ onBeforeUnmount(() => {
 
     <!-- PreLoad imgs -->
     <div style="display: none;">
-      <img 
-        v-for="projet in isArtist(currentData) ? currentData.projets : []" 
-        :key="projet.img"
-        :src="getAssetSrc(`artists/${projet.img}`)" 
-        :alt="projet.name"
-      />
+      <img v-for="projet in isArtist(currentData) ? currentData.projets : []" :key="projet.img"
+        :src="getAssetSrc(`artists/${projet.img}`)" :alt="projet.name" />
     </div>
 
-    <div class="image-overlay" :class="showImage ? '' : 'hide-image'">
+    <div class="image-overlay" :class="[showImage ? '' : 'hide-image']"
+      @click="isArtist(currentData) && handleProjectClick(currentData.projets.findIndex(p => p.img === currentProjectImg))">
       <img :src="getAssetSrc(`artists/${currentProjectImg}`)" :alt="'Project image'" class="overlay-image" />
     </div>
 
     <div v-if="isArtist(currentData)" class="galery-div">
-      <div v-for="projet in currentData.projets" :key="projet.img" class="photo-card">
+      <div v-for="(projet, index) in currentData.projets" :key="projet.img" @click="handleProjectClick(index)" class="photo-card">
         <div class="photo-info">
           <p class="photo-project">{{ projet.name }}</p>
         </div>
       </div>
     </div>
+
+    <Transition name="fade">
+      <div v-if="showVideo && activeVideoUrl" class="video-overlay" @click.self="closeVideo">
+        <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline />
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -124,11 +162,11 @@ onBeforeUnmount(() => {
   color: #fff;
 }
 
-.photo-galery-header{
-    height: 5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.photo-galery-header {
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image-overlay {
@@ -186,5 +224,36 @@ onBeforeUnmount(() => {
   margin: 0;
   font-weight: bold;
   color: #000;
+}
+
+
+.video-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-video {
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  border-radius: 12px;
+  outline: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Transition Fade --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
