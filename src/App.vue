@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import AppHeader from '@/components/layout/AppHeader.vue';
+import VideoPlayer from '@/components/ui/VideoPlayer.vue';
 
 // État pour afficher ou masquer l'écran d'accueil
 const isSplashVisible = ref(true);
@@ -14,27 +15,27 @@ const onSplashVideoEnded = () => {
 
 onMounted(() => {
   // On laisse une frame au DOM pour s'installer
-  requestAnimationFrame(() => {
-    if (!splashVideoRef.value) return;
+  // requestAnimationFrame(() => {
+  //   if (!splashVideoRef.value) return;
 
-    const video = splashVideoRef.value;
+  //   const video = splashVideoRef.value;
 
-    // 🚀 LE FIX SENIOR : On force les propriétés directement sur le DOM natif
-    // avant toute tentative de play(). Cela court-circuite la sécurité du navigateur.
-    video.muted = true;
-    video.defaultMuted = true; // Sécurité pour iOS
-    video.setAttribute('muted', ''); // Double sécurité pour Opera/Chrome
+  //   // 🚀 LE FIX SENIOR : On force les propriétés directement sur le DOM natif
+  //   // avant toute tentative de play(). Cela court-circuite la sécurité du navigateur.
+  //   video.muted = true;
+  //   video.defaultMuted = true; // Sécurité pour iOS
+  //   video.setAttribute('muted', ''); // Double sécurité pour Opera/Chrome
 
-    // On lance la lecture
-    video.play().catch((error) => {
-      alert("L'autoplay a été bloqué par la sécurité du navigateur :" + error);
+  //   // On lance la lecture
+  //   video.play().catch((error) => {
+  //     alert("L'autoplay a été bloqué par la sécurité du navigateur :" + error);
 
-      // 🛡️ PLAN DE SECOURS IMMÉDIAT : 
-      // Si NotAllowedError apparaît, on ne laisse pas l'utilisateur bloqué.
-      // On ferme le splash screen instantanément pour afficher le site.
-      isSplashVisible.value = false;
-    });
-  });
+  //     // 🛡️ PLAN DE SECOURS IMMÉDIAT : 
+  //     // Si NotAllowedError apparaît, on ne laisse pas l'utilisateur bloqué.
+  //     // On ferme le splash screen instantanément pour afficher le site.
+  //     isSplashVisible.value = false;
+  //   });
+  // });
 });
 
 
@@ -45,10 +46,11 @@ onMounted(() => {
     <Transition name="fade-splash">
       <div v-if="isSplashVisible" class="splash-screen">
 
-        <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif"
+        <VideoPlayer src="@/assets/logo-animation2.mp4" :autoplay="true" />
+        <!-- <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif"
           @ended="onSplashVideoEnded">
           <source src="@/assets/logo-animation2.mp4" type="video/mp4" />
-        </video>
+        </video> -->
 
       </div>
     </Transition>
