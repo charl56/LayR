@@ -17,17 +17,21 @@ onMounted(() => {
   requestAnimationFrame(() => {
     if (!splashVideoRef.value) return;
 
-    // 1. Sécurité absolue : On force le volume à 0 au niveau du code
-    splashVideoRef.value.muted = true;
+    const video = splashVideoRef.value;
 
-    // 2. On lance la lecture via une Promesse JavaScript
-    splashVideoRef.value.play().catch((error) => {
-      alert("L'autoplay a été bloqué par le navigateur/système :" + error);
-      
-      /* 🚀 PLAN DE SECOURS ULTRA-PRO :
-         Si le téléphone bloque la vidéo et exige un appui sur 'Play', 
-         on ne force pas l'utilisateur à attendre sur un écran figé.
-         On désactive immédiatement le splash screen pour le laisser entrer sur le site ! */
+    // 🚀 LE FIX SENIOR : On force les propriétés directement sur le DOM natif
+    // avant toute tentative de play(). Cela court-circuite la sécurité du navigateur.
+    video.muted = true;
+    video.defaultMuted = true; // Sécurité pour iOS
+    video.setAttribute('muted', ''); // Double sécurité pour Opera/Chrome
+
+    // On lance la lecture
+    video.play().catch((error) => {
+      console.warn("L'autoplay a été bloqué par la sécurité du navigateur :", error);
+
+      // 🛡️ PLAN DE SECOURS IMMÉDIAT : 
+      // Si NotAllowedError apparaît, on ne laisse pas l'utilisateur bloqué.
+      // On ferme le splash screen instantanément pour afficher le site.
       isSplashVisible.value = false;
     });
   });
@@ -41,7 +45,8 @@ onMounted(() => {
     <Transition name="fade-splash">
       <div v-if="isSplashVisible" class="splash-screen">
 
-        <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif" @ended="onSplashVideoEnded">
+        <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif"
+          @ended="onSplashVideoEnded">
           <source src="@/assets/logo-animation.mp4" type="video/mp4" />
         </video>
 
