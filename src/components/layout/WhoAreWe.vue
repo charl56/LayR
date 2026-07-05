@@ -27,7 +27,7 @@ const initScrollEffects = async () => {
       scrollTrigger: {
         trigger: headerWhoRef.value,
         start: "top bottom",
-        end: "top 60%",
+        end: "top 55%",
         scrub: true,
         invalidateOnRefresh: true,
         // markers: true,
