@@ -47,7 +47,7 @@ onMounted(() => {
 
         <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif"
           @ended="onSplashVideoEnded">
-          <source src="@/assets/logo-animation.mp4" type="video/mp4" />
+          <source src="@/assets/logo-animation2.mp4" type="video/mp4" />
         </video>
 
       </div>
