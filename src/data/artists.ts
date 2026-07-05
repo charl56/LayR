@@ -29,7 +29,7 @@ export const ARTISTS: Artist[] = [
         description: 'Ce projet de 9 titres poursuit l’évolution de Kelaggs vers une musique plus électronique, influencée par la dubstep de Skrillex, l’ambient et la vague hyperpop actuelle. Entièrement auto-produit, il mélange sonorités électroniques, textures immersives et esthétique pop 2010.',
         links: {
             apple: 'https://music.apple.com/us/artist/kelaggs/1548345854',
-            spotify: 'https://spotify.com/kelaggs',
+            spotify: 'https://open.spotify.com/intl-fr/artist/69lVOZHxxAPLcVtnxisYws',
             deezer: 'https://www.deezer.com/fr/artist/115884062',
             soundcloud: 'https://soundcloud.com/kelaggs'
         }

@@ -13,6 +13,8 @@ const { addProjectToCollection } = useCollectionStore();
 const { currentArtistId, currentPage } = useNavigationStore();
 // --- État Local
 const videoRef = ref<HTMLVideoElement | null>(null);
+const projectVideoRef = ref<HTMLVideoElement | null>(null);
+
 const streamRef = ref<MediaStream | null>(null);
 const hasAccess = ref<boolean | null>(null); // null = en attente, true = OK, false = refusé
 const errorMessage = ref<string>('');
@@ -86,19 +88,15 @@ const startImageAnalysis = () => {
 
 
 // --- Gestion du résultat
-const onScanSuccess = (lien: string) => {
+const onScanSuccess = async (lien: string) => {
   isDetecting.value = false; // Stop la boucle de scan
 
   // Extrait l'id du projet depuis l'URL : https://layr.ostudio426.com/scanner?video=kelaggs_nvlvie
   const videoId = lien.split('video=').pop();
-
   if (!videoId) return;
 
   // Recherche le projet dans les données ARTISTS
-  let videoUrl: string | undefined;
-
-  videoUrl = getVideoUrl(videoId)
-
+  const videoUrl = getVideoUrl(videoId);
   if (!videoUrl) {
     console.warn('Projet introuvable pour id :', videoId);
     isDetecting.value = true; // Reprend le scan si rien trouvé
@@ -108,9 +106,25 @@ const onScanSuccess = (lien: string) => {
 
   // Ajoute l'id dans l'URL sans recharger la page
   router.replace({ query: { video: videoId } });
-
-  // Lance la vidéo
   activeVideoUrl.value = videoUrl;
+
+  console.log('Projet trouvé pour id :', videoId, 'URL vidéo :', videoUrl);
+  await nextTick();
+  if (projectVideoRef.value) {
+    // On force le mode muet en JS pour iOS
+    projectVideoRef.value.muted = true;
+
+    // On lance la lecture et on gère proprement si l'iPhone refuse (mode économie d'énergie)
+    projectVideoRef.value.play().catch(error => {
+      console.warn("L'autoplay iOS a bloqué la vidéo. Tentative de secours...", error);
+
+      // Plan de secours : Si l'iPhone a bloqué, on ajoute des contrôles natifs temporaires 
+      // pour que l'utilisateur puisse au moins cliquer sur "Play" lui-même
+      if (projectVideoRef.value) {
+        projectVideoRef.value.controls = true;
+      }
+    });
+  }
 
   // Sauvegarde du projet
   for (const artist of ARTISTS) {
@@ -193,8 +207,8 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-else class="camera-wrapper">
-      <video ref="videoRef" autoplay playsinline muted @loadedmetadata="startImageAnalysis"
-        class="video-feed"></video>
+
+      <video ref="videoRef" autoplay playsinline muted @loadedmetadata="startImageAnalysis" class="video-feed"></video>
 
       <div class="scanner-overlay">
         <div class="scan-frame">
@@ -205,16 +219,21 @@ onBeforeUnmount(() => {
     </div>
 
 
-    
-      <a v-if="currentArtistId" @click.stop="onGaleryEvent()"><h3 class="btn-voir-gallerie">Voir galerie</h3></a>
+
+    <a v-if="currentArtistId" @click.stop="onGaleryEvent()">
+      <h3 class="btn-voir-gallerie">Voir galerie</h3>
+    </a>
 
 
-      <!-- Overlay vidéo -->
-      <Transition name="fade">
-        <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
-          <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline />
-        </div>
-      </Transition>
+    <!-- Overlay vidéo -->
+    <Transition name="fade">
+      <div v-if="activeVideoUrl" class="video-overlay" @click.self="closeVideo">
+        <!-- <video class="project-video" :src="activeVideoUrl" autoplay loop playsinline /> -->
+        <video ref="projectVideoRef" class="project-video" :src="activeVideoUrl" autoplay loop muted playsinline
+        webkit-playsinline />
+
+      </div>
+    </Transition>
 
   </div>
 </template>
