@@ -4,10 +4,36 @@ import AppHeader from '@/components/layout/AppHeader.vue';
 
 // État pour afficher ou masquer l'écran d'accueil
 const isSplashVisible = ref(true);
+const splashVideoRef = ref<HTMLVideoElement | null>(null);
+
 
 const onSplashVideoEnded = () => {
   isSplashVisible.value = false;
 };
+
+
+onMounted(() => {
+  // On laisse une frame au DOM pour s'installer
+  requestAnimationFrame(() => {
+    if (!splashVideoRef.value) return;
+
+    // 1. Sécurité absolue : On force le volume à 0 au niveau du code
+    splashVideoRef.value.muted = true;
+
+    // 2. On lance la lecture via une Promesse JavaScript
+    splashVideoRef.value.play().catch((error) => {
+      console.warn("L'autoplay a été bloqué par le navigateur/système :", error);
+      
+      /* 🚀 PLAN DE SECOURS ULTRA-PRO :
+         Si le téléphone bloque la vidéo et exige un appui sur 'Play', 
+         on ne force pas l'utilisateur à attendre sur un écran figé.
+         On désactive immédiatement le splash screen pour le laisser entrer sur le site ! */
+      isSplashVisible.value = false;
+    });
+  });
+});
+
+
 </script>
 
 <template>
@@ -15,7 +41,7 @@ const onSplashVideoEnded = () => {
     <Transition name="fade-splash">
       <div v-if="isSplashVisible" class="splash-screen">
 
-        <video autoplay muted playsinline webkit-playsinline preload="metadata" controls="false" class="splash-gif" @ended="onSplashVideoEnded">
+        <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif" @ended="onSplashVideoEnded">
           <source src="@/assets/logo-animation.mp4" type="video/mp4" />
         </video>
 
