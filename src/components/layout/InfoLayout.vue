@@ -47,6 +47,7 @@ const initAnimations = async () => {
         pin: true,
         pinSpacing: true,
         invalidateOnRefresh: true,
+        refreshPriority: 1, // 🚀 Dit à GSAP de calculer ce composant EN PREMIER
       }
     });
 

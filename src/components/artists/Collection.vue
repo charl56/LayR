@@ -17,13 +17,13 @@ const emit = defineEmits<{
 // États pour gérer l'ouverture, le DOM et GSAP
 const isOpen = ref(false);
 const headerRef = ref<HTMLElement | null>(null);
-const titleRef = ref<HTMLElement | null>(null);
-const ctx = ref<gsap.Context | null>(null);
+// const titleRef = ref<HTMLElement | null>(null);
+// const ctx = ref<gsap.Context | null>(null);
 
 // Fonction pour basculer l'état de la liste
 const toggleList = () => {
   isOpen.value = !isOpen.value;
-  emit('update:isOpen', isOpen.value); 
+  emit('update:isOpen', isOpen.value);
 };
 
 // Fonction pour gérer le clic sur un artiste
@@ -35,44 +35,50 @@ const handleArtistClick = (artist: Artist) => {
 };
 
 const initScrollEffects = async () => {
-  if (!headerRef.value || !titleRef.value) return;
-
-  if (ctx.value) ctx.value.revert();
+  if (!headerRef.value) return;
   await nextTick();
 
-  ctx.value = gsap.context(() => {
-    // 💡 L'animation est liée au doigt (scrub: true) entre le bas et le milieu de l'écran
-    gsap.fromTo(titleRef.value, 
-      { scale: 0.8 }, // Commence légèrement plus grand lorsqu'il apparaît tout en bas
-      {
-        scale: 1, // Revient à sa taille normale (1)
-        ease: "none",
-        scrollTrigger: {
-          // markers: true,
-          trigger: headerRef.value,
-          start: "top 70%", // Quand le composant entre par le bas
-          end: "top 40%",      // Jusqu'à ce qu'il atteigne le milieu de l'écran
-          scrub: true,         // Synchronisation millimétrée avec le scroll
-          invalidateOnRefresh: true
-        }
+
+  gsap.fromTo(headerRef.value,
+    { color: "#000000", backgroundColor: "#ffffff" },
+    {
+      color: "#ffffff",
+      backgroundColor: "#000000",
+      ease: "none",
+      scrollTrigger: {
+        trigger: headerRef.value, // Le trigger est l'élément lui-même
+        start: "top bottom",
+        end: "top 70%",
+        scrub: true,
+        invalidateOnRefresh: true,
+        // markers: true,
       }
-    );
-  }, headerRef.value);
+    }
+  );
 };
+
+import { watch } from 'vue';
+watch(isOpen, (newVal) => {
+  if (ScrollTrigger.getById("collectionTrigger")) {
+    // Si c'est ouvert, on fige le style, si c'est fermé, on réactive le ScrollTrigger
+    const st = ScrollTrigger.getById("collectionTrigger");
+    if (newVal) st?.disable();
+    else st?.enable();
+  }
+});
 
 onMounted(() => {
   initScrollEffects();
 });
 
 onBeforeUnmount(() => {
-  if (ctx.value) ctx.value.revert();
 });
 </script>
 
 <template>
-  <div id="collection" class="artist-list">
+  <div ref="titleRef" id="collection" class="artist-list">
     <div ref="headerRef" class="artist-list-header" @click="toggleList">
-      <h2 ref="titleRef" class="collection-title">COLLECTION</h2>
+      <h2 class="collection-title">COLLECTION</h2>
     </div>
 
     <div v-if="isOpen" class="artist-list-content">
@@ -97,14 +103,22 @@ onBeforeUnmount(() => {
   padding: 1rem;
   cursor: pointer;
   user-select: none;
-  background-color: v-bind('isOpen ? "white" : "black"');
-  color: v-bind('isOpen ? "black" : "white"');
+  background-color: "black";
+  color: "white";
+  /* background-color: v-bind('isOpen ? "white" : "black"');
+  color: v-bind('isOpen ? "black" : "white"'); */
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* .artist-list-header.is-active {
+  background-color: "white" !important;
+  color: "white" !important;
+} */
+
 .collection-title {
   margin: 0;
-  will-change: transform; /* Optimisation de performance pour le scale dynamique */
+  will-change: transform;
+  /* Optimisation de performance pour le scale dynamique */
 }
 
 .artist-list-content {
