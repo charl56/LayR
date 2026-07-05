@@ -15,9 +15,8 @@ const onSplashVideoEnded = () => {
     <Transition name="fade-splash">
       <div v-if="isSplashVisible" class="splash-screen">
 
-        <video autoplay muted playsinline webkit-playsinline class="splash-gif" @ended="onSplashVideoEnded">
+        <video autoplay muted playsinline webkit-playsinline preload="metadata" controls="false" class="splash-gif" @ended="onSplashVideoEnded">
           <source src="@/assets/logo-animation.mp4" type="video/mp4" />
-          <img src="@/assets/logo-animation.gif" alt="Chargement LAYR..." />
         </video>
 
       </div>
