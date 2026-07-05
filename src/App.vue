@@ -22,7 +22,7 @@ onMounted(() => {
 
     // 2. On lance la lecture via une Promesse JavaScript
     splashVideoRef.value.play().catch((error) => {
-      console.warn("L'autoplay a été bloqué par le navigateur/système :", error);
+      alert("L'autoplay a été bloqué par le navigateur/système :" + error);
       
       /* 🚀 PLAN DE SECOURS ULTRA-PRO :
          Si le téléphone bloque la vidéo et exige un appui sur 'Play', 
