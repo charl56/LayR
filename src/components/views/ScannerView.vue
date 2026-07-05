@@ -74,6 +74,7 @@ const startImageAnalysis = () => {
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height);
+    console.log('Scan en cours...');
     if (code) {
       onScanSuccess(code.data);
       return; // Stop la boucle
