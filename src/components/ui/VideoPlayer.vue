@@ -35,7 +35,7 @@ function onLoadedMetadata() {
     if (props.autoplay && videoRef.value) {
         videoRef.value.muted = true
         videoRef.value.play().catch((err) => {
-            console.warn('Autoplay bloqué par le navigateur :', err)
+            alert('Autoplay bloqué par le navigateur :' + err)
         })
     }
 }
