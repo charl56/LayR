@@ -27,7 +27,7 @@ onMounted(() => {
 
     // On lance la lecture
     video.play().catch((error) => {
-      alert("L'autoplay a été bloqué par la sécurité du navigateur :", error);
+      alert("L'autoplay a été bloqué par la sécurité du navigateur :" + error);
 
       // 🛡️ PLAN DE SECOURS IMMÉDIAT : 
       // Si NotAllowedError apparaît, on ne laisse pas l'utilisateur bloqué.
