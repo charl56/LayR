@@ -1,41 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import AppHeader from '@/components/layout/AppHeader.vue';
-import VideoPlayer from '@/components/ui/VideoPlayer.vue';
 
 // État pour afficher ou masquer l'écran d'accueil
 const isSplashVisible = ref(true);
-const splashVideoRef = ref<HTMLVideoElement | null>(null);
 
 
-const onSplashVideoEnded = () => {
-  isSplashVisible.value = false;
-};
+let timer: ReturnType<typeof setTimeout> | undefined
+function onLoad() {
+    timer = setTimeout(() => isSplashVisible.value = false, 4000)
+}
 
 
 onMounted(() => {
-  // On laisse une frame au DOM pour s'installer
-  // requestAnimationFrame(() => {
-  //   if (!splashVideoRef.value) return;
-
-  //   const video = splashVideoRef.value;
-
-  //   // 🚀 LE FIX SENIOR : On force les propriétés directement sur le DOM natif
-  //   // avant toute tentative de play(). Cela court-circuite la sécurité du navigateur.
-  //   video.muted = true;
-  //   video.defaultMuted = true; // Sécurité pour iOS
-  //   video.setAttribute('muted', ''); // Double sécurité pour Opera/Chrome
-
-  //   // On lance la lecture
-  //   video.play().catch((error) => {
-  //     alert("L'autoplay a été bloqué par la sécurité du navigateur :" + error);
-
-  //     // 🛡️ PLAN DE SECOURS IMMÉDIAT : 
-  //     // Si NotAllowedError apparaît, on ne laisse pas l'utilisateur bloqué.
-  //     // On ferme le splash screen instantanément pour afficher le site.
-  //     isSplashVisible.value = false;
-  //   });
-  // });
 });
 
 
@@ -45,13 +22,8 @@ onMounted(() => {
   <div class="app">
     <Transition name="fade-splash">
       <div v-if="isSplashVisible" class="splash-screen">
-
-        <VideoPlayer src="@/assets/logo-animation2.mp4" :autoplay="true" />
-        <!-- <video ref="splashVideoRef" autoplay muted playsinline webkit-playsinline preload="auto" class="splash-gif"
-          @ended="onSplashVideoEnded">
-          <source src="@/assets/logo-animation2.mp4" type="video/mp4" />
-        </video> -->
-
+        <img class="logo-intro__gif" src="@/assets/logo-animation.gif" alt="logo-animate  " decoding="async" fetchpriority="high" @load="onLoad"
+            @error="isSplashVisible = false" />
       </div>
     </Transition>
 
@@ -82,14 +54,6 @@ onMounted(() => {
   align-items: center;
 }
 
-.splash-gif {
-  width: 90%;
-  max-width: 400px;
-  /* Ajuste la taille maximale de ton GIF sur grand écran */
-  height: auto;
-  object-fit: contain;
-}
-
 /* --- Transition Fondu Sortant --- */
 .fade-splash-leave-active {
   transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
@@ -97,5 +61,13 @@ onMounted(() => {
 
 .fade-splash-leave-to {
   opacity: 0;
+}
+
+
+.logo-intro__gif {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 </style>
